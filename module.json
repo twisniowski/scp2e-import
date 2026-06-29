@@ -8,7 +8,9 @@
     "verified": 14
   },
   "authors": [
-    { "name": "Ash" }
+    {
+      "name": "Ash"
+    }
   ],
   "esmodules": [
     "scripts/module.js"
@@ -17,19 +19,28 @@
     "styles/scp2e.css"
   ],
   "languages": [
-    { "lang": "en", "name": "English", "path": "lang/en.json" }
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
   ],
   "documentTypes": {
     "Actor": {
       "character": {
-        "htmlFields": ["smallItems", "storage", "aspectNotes", "miscNotes"]
+        "htmlFields": [
+          "smallItems",
+          "storage",
+          "aspectNotes",
+          "miscNotes"
+        ]
       }
     }
   },
   "relationships": {
     "systems": []
   },
-  "url": "https://github.com/REPLACE_ME/scp2e-character-sheet",
-  "manifest": "https://raw.githubusercontent.com/REPLACE_ME/scp2e-character-sheet/main/module.json",
-  "download": "https://github.com/REPLACE_ME/scp2e-character-sheet/releases/latest/download/module.zip"
+  "url": "https://github.com/twisniowski/scp2e-import",
+  "manifest": "https://raw.githubusercontent.com/twisniowski/scp2e-import/main/module.json",
+  "download": "https://github.com/twisniowski/scp2e-import/releases/latest/download/module.zip"
 }
