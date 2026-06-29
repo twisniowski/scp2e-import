@@ -1,0 +1,273 @@
+<div class="scp2e-sheet">
+
+  {{!-- Header: identity + PDF import --}}
+  <header class="scp2e-header">
+    <div class="scp2e-logo"><span class="scp2e-mark">SCP</span></div>
+    <div class="scp2e-identity">
+      <div class="id-row">
+        <label>{{localize "SCP2E.Field.Character"}}</label>
+        <input type="text" name="name" value="{{actor.name}}" placeholder="—"/>
+      </div>
+      <div class="id-row">
+        <label>{{localize "SCP2E.Field.Player"}}</label>
+        <input type="text" name="system.identity.player" value="{{system.identity.player}}"/>
+      </div>
+      <div class="id-grid">
+        <div><label>{{localize "SCP2E.Field.Title"}}</label>
+          <input type="text" name="system.identity.title" value="{{system.identity.title}}"/></div>
+        <div><label>{{localize "SCP2E.Field.PersonnelClass"}}</label>
+          <input type="text" name="system.identity.personnelClass" value="{{system.identity.personnelClass}}"/></div>
+        <div><label>{{localize "SCP2E.Field.Age"}}</label>
+          <input type="text" name="system.identity.age" value="{{system.identity.age}}"/></div>
+        <div><label>{{localize "SCP2E.Field.SecurityLevel"}}</label>
+          <input type="text" name="system.identity.securityLevel" value="{{system.identity.securityLevel}}"/></div>
+      </div>
+    </div>
+    <div class="scp2e-header-actions">
+      <button type="button" data-action="importPdf" title="{{localize 'SCP2E.Import.Button'}}">
+        <i class="fa-solid fa-file-import"></i> {{localize "SCP2E.Import.Button"}}
+      </button>
+    </div>
+  </header>
+
+  {{!-- Tab navigation --}}
+  <nav class="scp2e-tabs">
+    {{#each tabs}}
+      <a class="scp2e-tab {{#if active}}active{{/if}}" data-action="changeTab" data-tab="{{id}}">
+        <i class="{{icon}}"></i> {{localize label}}
+      </a>
+    {{/each}}
+  </nav>
+
+  <section class="tab-body">
+
+  {{!-- ============================ MAIN ============================ --}}
+  {{#if (eq activeTab "main")}}
+  <div class="scp2e-main">
+    <div class="attr-columns">
+      <div class="attr-group">
+        <h3 class="grp-physical">{{localize "SCP2E.Group.Physical"}}</h3>
+        {{#each physical}}
+          <div class="attr-box">
+            <span class="attr-label">{{label}}</span>
+            <span class="attr-abbr">{{abbr}}</span>
+            <input type="number" name="system.attributes.{{key}}.value" value="{{value}}" min="0"/>
+          </div>
+        {{/each}}
+      </div>
+      <div class="attr-group">
+        <h3 class="grp-mental">{{localize "SCP2E.Group.Mental"}}</h3>
+        {{#each mental}}
+          <div class="attr-box">
+            <span class="attr-label">{{label}}</span>
+            <span class="attr-abbr">{{abbr}}</span>
+            <input type="number" name="system.attributes.{{key}}.value" value="{{value}}" min="0"/>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="vitals">
+      <div class="vital hp">
+        <label>{{localize "SCP2E.Field.HP"}}</label>
+        <input type="number" name="system.health.hp" value="{{system.health.hp}}"/>
+        <span class="sep">/</span>
+        <input type="number" name="system.health.maxHp" value="{{system.health.maxHp}}"/>
+      </div>
+      <div class="vital"><label>{{localize "SCP2E.Field.BaseHP"}}</label>
+        <input type="number" name="system.health.baseHp" value="{{system.health.baseHp}}"/></div>
+      <div class="vital"><label>{{localize "SCP2E.Field.DR"}}</label>
+        <input type="number" name="system.health.dr" value="{{system.health.dr}}"/></div>
+      <div class="vital"><label>{{localize "SCP2E.Field.HTHx"}}</label>
+        <input type="text" name="system.health.hthMult" value="{{system.health.hthMult}}"/></div>
+      <div class="vital"><label>{{localize "SCP2E.Field.BaseSpeed"}}</label>
+        <input type="number" name="system.combat.baseSpeed" value="{{system.combat.baseSpeed}}"/></div>
+    </div>
+
+    <div class="tracks">
+      <div class="track">
+        <label>{{localize "SCP2E.Field.Exertion"}}</label>
+        <button type="button" data-action="adjustTrack" data-track="exertion" data-delta="-1">−</button>
+        <span class="track-val">{{system.tracks.exertion}}</span>
+        <button type="button" data-action="adjustTrack" data-track="exertion" data-delta="1">+</button>
+      </div>
+      <div class="track">
+        <label>{{localize "SCP2E.Field.Reverence"}}</label>
+        <button type="button" data-action="adjustTrack" data-track="reverence" data-delta="-1">−</button>
+        <span class="track-val">{{system.tracks.reverence}}</span>
+        <button type="button" data-action="adjustTrack" data-track="reverence" data-delta="1">+</button>
+      </div>
+    </div>
+
+    <div class="disruption">
+      <label>{{localize "SCP2E.Field.DisruptionClass"}}</label>
+      <select name="system.identity.disruptionClass">
+        <option value="">—</option>
+        {{#each disruptionClasses as |d key|}}
+          <option value="{{key}}" {{#if (eq ../system.identity.disruptionClass key)}}selected{{/if}}>{{d.label}} ({{d.ratio}})</option>
+        {{/each}}
+      </select>
+      <label class="chapters">{{localize "SCP2E.Field.ChaptersSurvived"}}</label>
+      <input type="number" name="system.identity.chaptersSurvived" value="{{system.identity.chaptersSurvived}}" min="0"/>
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- ============================ SKILLS ============================ --}}
+  {{#if (eq activeTab "skills")}}
+  <div class="scp2e-skills">
+    <h3>{{localize "SCP2E.Skills.Crucial"}}</h3>
+    <div class="skill-list">
+      {{#each crucialSkills}}
+        <div class="skill-row crucial">
+          <span class="skill-name">{{label}}</span>
+          <span class="skill-gov">{{gov}}</span>
+          <input type="number" name="system.skills.{{key}}.value" value="{{value}}" min="0"/>
+          <span class="skill-cap" title="{{localize 'SCP2E.Skills.Cap'}}">/{{cap}}</span>
+        </div>
+      {{/each}}
+    </div>
+
+    <h3>{{localize "SCP2E.Skills.Standard"}}</h3>
+    <div class="skill-list two-col">
+      {{#each standardSkills}}
+        <div class="skill-row">
+          <span class="skill-name">{{label}}</span>
+          <span class="skill-gov">{{gov}}</span>
+          <input type="number" name="system.skills.{{key}}.value" value="{{value}}" min="0"/>
+          <span class="skill-cap" title="{{localize 'SCP2E.Skills.Cap'}}">/{{cap}}</span>
+        </div>
+      {{/each}}
+    </div>
+
+    <h3>{{localize "SCP2E.Skills.Custom"}}
+      <button type="button" class="add-row" data-action="addCustomSkill" data-array="system.customSkills">
+        <i class="fa-solid fa-plus"></i></button>
+    </h3>
+    <div class="skill-list">
+      {{#each system.customSkills as |skill i|}}
+        <div class="skill-row custom">
+          <input type="text" class="custom-name" name="system.customSkills.{{i}}.name" value="{{skill.name}}" placeholder="{{localize 'SCP2E.Skills.CustomName'}}"/>
+          <input type="text" class="custom-gov" name="system.customSkills.{{i}}.gov" value="{{skill.gov}}" placeholder="ATTR"/>
+          <input type="number" name="system.customSkills.{{i}}.value" value="{{skill.value}}" min="0"/>
+          <button type="button" class="del-row" data-action="deleteCustomSkill" data-array="system.customSkills" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- ============================ COMBAT ============================ --}}
+  {{#if (eq activeTab "combat")}}
+  <div class="scp2e-combat">
+    <div class="combat-derived">
+      <div><label>{{localize "SCP2E.Field.Speed"}}</label>
+        <input type="text" name="system.combat.speed" value="{{system.combat.speed}}"/></div>
+      <div><label>{{localize "SCP2E.Field.Combat"}}</label>
+        <input type="text" name="system.combat.combat" value="{{system.combat.combat}}"/></div>
+      <div><label>{{localize "SCP2E.Field.Projectile"}}</label>
+        <input type="text" name="system.combat.projectile" value="{{system.combat.projectile}}"/></div>
+      <div><label>{{localize "SCP2E.Field.Reaction"}}</label>
+        <input type="text" name="system.combat.reaction" value="{{system.combat.reaction}}"/></div>
+      <div><label>{{localize "SCP2E.Field.Stagger"}}</label>
+        <input type="text" name="system.combat.stagger" value="{{system.combat.stagger}}"/></div>
+    </div>
+
+    <h3>{{localize "SCP2E.Weapons.Title"}}
+      <button type="button" class="add-row" data-action="addWeapon" data-array="system.weapons"><i class="fa-solid fa-plus"></i></button>
+    </h3>
+    <table class="weapons">
+      <thead><tr>
+        <th>{{localize "SCP2E.Weapons.Name"}}</th><th>{{localize "SCP2E.Weapons.ToHit"}}</th>
+        <th>{{localize "SCP2E.Weapons.Aim"}}</th><th>{{localize "SCP2E.Weapons.Recoil"}}</th>
+        <th>{{localize "SCP2E.Weapons.BDam"}}</th><th>{{localize "SCP2E.Weapons.XDam"}}</th>
+        <th>{{localize "SCP2E.Weapons.Mag"}}</th><th>{{localize "SCP2E.Weapons.Range"}}</th>
+        <th>{{localize "SCP2E.Weapons.Mass"}}</th><th>{{localize "SCP2E.Weapons.Note"}}</th><th></th>
+      </tr></thead>
+      <tbody>
+      {{#each system.weapons as |w i|}}
+        <tr>
+          <td><input type="text" name="system.weapons.{{i}}.name" value="{{w.name}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.toHit" value="{{w.toHit}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.aim" value="{{w.aim}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.recoil" value="{{w.recoil}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.bDam" value="{{w.bDam}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.xDam" value="{{w.xDam}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.mag" value="{{w.mag}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.range" value="{{w.range}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.mass" value="{{w.mass}}"/></td>
+          <td><input type="text" name="system.weapons.{{i}}.note" value="{{w.note}}"/></td>
+          <td><button type="button" class="del-row" data-action="deleteWeapon" data-array="system.weapons" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button></td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+
+    <div class="uniforms">
+      <div><label>{{localize "SCP2E.Uniform.AStyle"}}</label>
+        <input type="text" name="system.uniforms.aStyle" value="{{system.uniforms.aStyle}}"/></div>
+      <div><label>{{localize "SCP2E.Uniform.ASus"}}</label>
+        <input type="text" name="system.uniforms.aSus" value="{{system.uniforms.aSus}}"/></div>
+      <div><label>{{localize "SCP2E.Uniform.BStyle"}}</label>
+        <input type="text" name="system.uniforms.bStyle" value="{{system.uniforms.bStyle}}"/></div>
+      <div><label>{{localize "SCP2E.Uniform.BSus"}}</label>
+        <input type="text" name="system.uniforms.bSus" value="{{system.uniforms.bSus}}"/></div>
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- ============================ ASPECTS ============================ --}}
+  {{#if (eq activeTab "aspects")}}
+  <div class="scp2e-aspects">
+    <h3>{{localize "SCP2E.Aspects.Title"}}
+      <button type="button" class="add-row" data-action="addAspect" data-array="system.aspects"><i class="fa-solid fa-plus"></i></button>
+    </h3>
+    <table class="aspects">
+      <thead><tr>
+        <th>{{localize "SCP2E.Aspects.Name"}}</th><th>{{localize "SCP2E.Aspects.Type"}}</th>
+        <th>{{localize "SCP2E.Aspects.Cost"}}</th><th>{{localize "SCP2E.Aspects.Page"}}</th><th></th>
+      </tr></thead>
+      <tbody>
+      {{#each system.aspects as |a i|}}
+        <tr>
+          <td><input type="text" name="system.aspects.{{i}}.name" value="{{a.name}}"/></td>
+          <td><select name="system.aspects.{{i}}.type">
+            <option value="power" {{#if (eq a.type "power")}}selected{{/if}}>{{localize "SCP2E.Aspects.Power"}}</option>
+            <option value="talent" {{#if (eq a.type "talent")}}selected{{/if}}>{{localize "SCP2E.Aspects.Talent"}}</option>
+            <option value="history" {{#if (eq a.type "history")}}selected{{/if}}>{{localize "SCP2E.Aspects.History"}}</option>
+          </select></td>
+          <td><input type="text" name="system.aspects.{{i}}.cost" value="{{a.cost}}"/></td>
+          <td><input type="text" name="system.aspects.{{i}}.page" value="{{a.page}}"/></td>
+          <td><button type="button" class="del-row" data-action="deleteAspect" data-array="system.aspects" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button></td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+
+    <h3>{{localize "SCP2E.Departments.Title"}}</h3>
+    <div class="departments">
+      {{#each departments}}
+        <div class="dept"><label>{{key}}</label>
+          <input type="number" name="system.departments.{{key}}" value="{{value}}"/></div>
+      {{/each}}
+    </div>
+
+    <h3>{{localize "SCP2E.Field.AspectNotes"}}</h3>
+    <div class="editor-host">{{editor enriched.aspectNotes target="system.aspectNotes" editable=editable button=true engine="prosemirror"}}</div>
+  </div>
+  {{/if}}
+
+  {{!-- ============================ NOTES ============================ --}}
+  {{#if (eq activeTab "notes")}}
+  <div class="scp2e-notes">
+    <h3>{{localize "SCP2E.Field.SmallItems"}}</h3>
+    <div class="editor-host">{{editor enriched.smallItems target="system.smallItems" editable=editable button=true engine="prosemirror"}}</div>
+    <h3>{{localize "SCP2E.Field.Storage"}}</h3>
+    <div class="editor-host">{{editor enriched.storage target="system.storage" editable=editable button=true engine="prosemirror"}}</div>
+    <h3>{{localize "SCP2E.Field.MiscNotes"}}</h3>
+    <div class="editor-host">{{editor enriched.miscNotes target="system.miscNotes" editable=editable button=true engine="prosemirror"}}</div>
+  </div>
+  {{/if}}
+
+  </section>
+</div>

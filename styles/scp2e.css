@@ -1,0 +1,113 @@
+/* SCP 2e Character Sheet styling. Industrial Foundation aesthetic. */
+.scp2e.sheet .window-content { padding: 0; background: #d9dbdd; }
+
+.scp2e-sheet { font-family: "Signika", sans-serif; color: #1a1a1a; display: flex; flex-direction: column; height: 100%; }
+
+/* Header */
+.scp2e-header {
+  display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center;
+  padding: 8px 12px; background: linear-gradient(180deg, #2b2b2b, #111); color: #f2f2f2;
+  border-bottom: 3px solid #000;
+}
+.scp2e-logo { display: flex; align-items: center; justify-content: center; }
+.scp2e-mark {
+  font-weight: 800; letter-spacing: 1px; font-size: 20px; border: 3px solid #f2f2f2;
+  border-radius: 50%; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+}
+.scp2e-identity .id-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.scp2e-identity label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; opacity: .8; min-width: 64px; }
+.scp2e-identity input { background: rgba(255,255,255,.1); border: 1px solid #555; color: #fff; border-radius: 3px; padding: 2px 4px; flex: 1; }
+.scp2e-identity .id-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; margin-top: 4px; }
+.scp2e-identity .id-grid > div { display: flex; align-items: center; gap: 6px; }
+.scp2e-header-actions button {
+  background: #b22; border: 1px solid #800; color: #fff; border-radius: 3px; padding: 6px 10px;
+  cursor: pointer; font-weight: 600; white-space: nowrap;
+}
+.scp2e-header-actions button:hover { background: #d33; }
+
+/* Tabs */
+.scp2e-tabs { display: flex; gap: 2px; background: #1a1a1a; padding: 0 8px; }
+.scp2e-tab {
+  color: #bbb; padding: 8px 14px; cursor: pointer; border-bottom: 3px solid transparent;
+  font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
+}
+.scp2e-tab:hover { color: #fff; }
+.scp2e-tab.active { color: #fff; border-bottom-color: #b22; background: #2b2b2b; }
+
+.tab-body { flex: 1; overflow-y: auto; padding: 12px; background: #e7e8ea; }
+.tab-body h3 {
+  font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 6px;
+  border-bottom: 2px solid #333; padding-bottom: 2px; display: flex; align-items: center; gap: 8px;
+}
+.tab-body input, .tab-body select { background: #fff; border: 1px solid #aaa; border-radius: 3px; padding: 2px 4px; }
+.tab-body input[type="number"] { width: 48px; text-align: center; }
+
+/* Attributes */
+.attr-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.attr-group h3.grp-physical { color: #1b4f72; border-color: #1b4f72; }
+.attr-group h3.grp-mental { color: #6c3483; border-color: #6c3483; }
+.attr-box {
+  display: grid; grid-template-columns: 1fr auto 56px; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #999; border-radius: 4px; padding: 6px 8px; margin-bottom: 5px;
+}
+.attr-label { font-weight: 700; text-transform: uppercase; font-size: 12px; }
+.attr-abbr { font-size: 10px; color: #777; font-weight: 700; }
+.attr-box input { font-size: 18px; font-weight: 700; }
+
+/* Vitals */
+.vitals { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.vital { background: #fff; border: 1px solid #999; border-radius: 4px; padding: 6px 8px; display: flex; align-items: center; gap: 6px; }
+.vital label { font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
+.vital.hp .sep { font-weight: 700; }
+.vital.hp input { width: 56px; }
+
+/* Tracks */
+.tracks { display: flex; gap: 16px; margin-top: 14px; }
+.track { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #999; border-radius: 4px; padding: 6px 10px; }
+.track button { width: 24px; height: 24px; border: 1px solid #777; background: #eee; border-radius: 3px; cursor: pointer; font-weight: 700; }
+.track button:hover { background: #ddd; }
+.track-val { min-width: 24px; text-align: center; font-weight: 700; font-size: 16px; }
+
+.disruption { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.disruption label { font-size: 11px; text-transform: uppercase; font-weight: 700; }
+
+/* Skills */
+.skill-list { display: grid; gap: 3px; }
+.skill-list.two-col { grid-template-columns: 1fr 1fr; gap: 3px 16px; }
+.skill-row { display: grid; grid-template-columns: 1fr auto 48px auto; align-items: center; gap: 8px; background: #fff; border: 1px solid #bbb; border-radius: 3px; padding: 3px 8px; }
+.skill-row.crucial { border-left: 3px solid #b22; }
+.skill-name { font-size: 12px; font-weight: 600; }
+.skill-gov { font-size: 9px; color: #888; font-weight: 700; }
+.skill-cap { font-size: 11px; color: #555; }
+.skill-row.custom { grid-template-columns: 1fr 60px 48px auto; }
+.skill-row.custom .custom-name { width: 100%; }
+
+.add-row, .del-row { background: none; border: none; cursor: pointer; color: #555; }
+.add-row:hover { color: #1b7; }
+.del-row:hover { color: #b22; }
+
+/* Combat / tables */
+.combat-derived { display: flex; flex-wrap: wrap; gap: 10px; }
+.combat-derived > div { background: #fff; border: 1px solid #999; border-radius: 4px; padding: 6px 8px; }
+.combat-derived label { font-size: 10px; text-transform: uppercase; font-weight: 700; display: block; }
+.combat-derived input { width: 90px; }
+
+table.weapons, table.aspects { width: 100%; border-collapse: collapse; font-size: 11px; }
+table.weapons th, table.aspects th { background: #2b2b2b; color: #fff; padding: 3px 4px; font-size: 9px; text-transform: uppercase; }
+table.weapons td, table.aspects td { border: 1px solid #ccc; padding: 1px; }
+table.weapons input, table.aspects input, table.aspects select { width: 100%; border: none; background: transparent; }
+table.weapons td:first-child { min-width: 90px; }
+
+.uniforms { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin-top: 12px; }
+.uniforms > div { display: flex; align-items: center; gap: 6px; }
+.uniforms label { font-size: 10px; text-transform: uppercase; font-weight: 700; min-width: 90px; }
+.uniforms input { flex: 1; }
+
+.departments { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.dept { display: flex; flex-direction: column; align-items: center; background: #fff; border: 1px solid #999; border-radius: 4px; padding: 4px; }
+.dept label { font-size: 10px; font-weight: 700; }
+.dept input { width: 44px; }
+
+.editor-host { background: #fff; border: 1px solid #999; border-radius: 4px; min-height: 100px; }
+.scp2e-notes .editor-host { min-height: 140px; }
+.editor-host .editor { min-height: 100px; }

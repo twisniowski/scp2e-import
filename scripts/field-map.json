@@ -1,0 +1,514 @@
+{
+ "Text Field 95": {
+  "target": "system.identity.player",
+  "type": "string"
+ },
+ "Text Field 96": {
+  "target": "name",
+  "type": "string"
+ },
+ "Text Field 99": {
+  "target": "system.identity.title",
+  "type": "string"
+ },
+ "Text Field 97": {
+  "target": "system.identity.personnelClass",
+  "type": "string"
+ },
+ "Text Field 100": {
+  "target": "system.identity.age",
+  "type": "string"
+ },
+ "Text Field 98": {
+  "target": "system.identity.securityLevel",
+  "type": "string"
+ },
+ "Text Field 101": {
+  "target": "system.health.dr",
+  "type": "number"
+ },
+ "Text Field 102": {
+  "target": "system.health.maxHp",
+  "type": "number"
+ },
+ "Text Field 103": {
+  "target": "system.health.hp",
+  "type": "number"
+ },
+ "Text Field 104": {
+  "target": "system.combat.baseSpeed",
+  "type": "number"
+ },
+ "Text Field 105": {
+  "target": "system.health.baseHp",
+  "type": "number"
+ },
+ "Text Field 106": {
+  "target": "system.health.hthMult",
+  "type": "string"
+ },
+ "Text Field 2": {
+  "target": "system.attributes.strength.value",
+  "type": "number"
+ },
+ "Text Field 3": {
+  "target": "system.attributes.dexterity.value",
+  "type": "number"
+ },
+ "Text Field 4": {
+  "target": "system.attributes.perception.value",
+  "type": "number"
+ },
+ "Text Field 5": {
+  "target": "system.attributes.health.value",
+  "type": "number"
+ },
+ "Text Field 6": {
+  "target": "system.attributes.intellect.value",
+  "type": "number"
+ },
+ "Text Field 8": {
+  "target": "system.attributes.willpower.value",
+  "type": "number"
+ },
+ "Text Field 7": {
+  "target": "system.attributes.charisma.value",
+  "type": "number"
+ },
+ "Text Field 9": {
+  "target": "system.attributes.fate.value",
+  "type": "number"
+ },
+ "Text Field 11": {
+  "target": "system.skills.awareness.value",
+  "type": "number"
+ },
+ "Text Field 13": {
+  "target": "system.skills.dodge.value",
+  "type": "number"
+ },
+ "Text Field 16": {
+  "target": "system.skills.firearms.value",
+  "type": "number"
+ },
+ "Text Field 17": {
+  "target": "system.skills.melee.value",
+  "type": "number"
+ },
+ "Text Field 19": {
+  "target": "system.skills.animalKen.value",
+  "type": "number"
+ },
+ "Text Field 21": {
+  "target": "system.skills.anomalistics.value",
+  "type": "number"
+ },
+ "Text Field 23": {
+  "target": "system.skills.athletics.value",
+  "type": "number"
+ },
+ "Text Field 25": {
+  "target": "system.skills.brawn.value",
+  "type": "number"
+ },
+ "Text Field 27": {
+  "target": "system.skills.breakFree.value",
+  "type": "number"
+ },
+ "Text Field 29": {
+  "target": "system.skills.computers.value",
+  "type": "number"
+ },
+ "Text Field 31": {
+  "target": "system.skills.creativity.value",
+  "type": "number"
+ },
+ "Text Field 33": {
+  "target": "system.skills.deceive.value",
+  "type": "number"
+ },
+ "Text Field 35": {
+  "target": "system.skills.disarm.value",
+  "type": "number"
+ },
+ "Text Field 37": {
+  "target": "system.skills.disguise.value",
+  "type": "number"
+ },
+ "Text Field 39": {
+  "target": "system.skills.intimidate.value",
+  "type": "number"
+ },
+ "Text Field 41": {
+  "target": "system.skills.intuition.value",
+  "type": "number"
+ },
+ "Text Field 43": {
+  "target": "system.skills.investigate.value",
+  "type": "number"
+ },
+ "Text Field 45": {
+  "target": "system.skills.mathematics.value",
+  "type": "number"
+ },
+ "Text Field 47": {
+  "target": "system.skills.mechanics.value",
+  "type": "number"
+ },
+ "Text Field 49": {
+  "target": "system.skills.medical.value",
+  "type": "number"
+ },
+ "Text Field 51": {
+  "target": "system.skills.navigate.value",
+  "type": "number"
+ },
+ "Text Field 53": {
+  "target": "system.skills.ordnance.value",
+  "type": "number"
+ },
+ "Text Field 55": {
+  "target": "system.skills.persuade.value",
+  "type": "number"
+ },
+ "Text Field 57": {
+  "target": "system.skills.poise.value",
+  "type": "number"
+ },
+ "Text Field 59": {
+  "target": "system.skills.psychology.value",
+  "type": "number"
+ },
+ "Text Field 61": {
+  "target": "system.skills.resilience.value",
+  "type": "number"
+ },
+ "Text Field 63": {
+  "target": "system.skills.resistDeath.value",
+  "type": "number"
+ },
+ "Text Field 65": {
+  "target": "system.skills.selfControl.value",
+  "type": "number"
+ },
+ "Text Field 67": {
+  "target": "system.skills.stealth.value",
+  "type": "number"
+ },
+ "Text Field 69": {
+  "target": "system.skills.teaching.value",
+  "type": "number"
+ },
+ "Text Field 71": {
+  "target": "system.skills.technology.value",
+  "type": "number"
+ },
+ "Text Field 73": {
+  "target": "system.skills.thievery.value",
+  "type": "number"
+ },
+ "Text Field 75": {
+  "target": "system.skills.vehicles.value",
+  "type": "number"
+ },
+ "Text Field 107": {
+  "target": "system.weapons.0.name",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 108": {
+  "target": "system.weapons.0.toHit",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 109": {
+  "target": "system.weapons.0.aim",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1010": {
+  "target": "system.weapons.0.recoil",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1011": {
+  "target": "system.weapons.0.bDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1012": {
+  "target": "system.weapons.0.xDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1013": {
+  "target": "system.weapons.0.mag",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1014": {
+  "target": "system.weapons.0.range",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1015": {
+  "target": "system.weapons.0.mass",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1016": {
+  "target": "system.weapons.0.note",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1017": {
+  "target": "system.weapons.1.name",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1018": {
+  "target": "system.weapons.1.toHit",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1019": {
+  "target": "system.weapons.1.aim",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1020": {
+  "target": "system.weapons.1.recoil",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1021": {
+  "target": "system.weapons.1.bDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1022": {
+  "target": "system.weapons.1.xDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1023": {
+  "target": "system.weapons.1.mag",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1024": {
+  "target": "system.weapons.1.range",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1025": {
+  "target": "system.weapons.1.mass",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1026": {
+  "target": "system.weapons.1.note",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1027": {
+  "target": "system.weapons.2.name",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1028": {
+  "target": "system.weapons.2.toHit",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1029": {
+  "target": "system.weapons.2.aim",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1030": {
+  "target": "system.weapons.2.recoil",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1031": {
+  "target": "system.weapons.2.bDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1032": {
+  "target": "system.weapons.2.xDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1033": {
+  "target": "system.weapons.2.mag",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1034": {
+  "target": "system.weapons.2.range",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1035": {
+  "target": "system.weapons.2.mass",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1036": {
+  "target": "system.weapons.2.note",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1037": {
+  "target": "system.weapons.3.name",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1038": {
+  "target": "system.weapons.3.toHit",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1039": {
+  "target": "system.weapons.3.aim",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1040": {
+  "target": "system.weapons.3.recoil",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1041": {
+  "target": "system.weapons.3.bDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1042": {
+  "target": "system.weapons.3.xDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1043": {
+  "target": "system.weapons.3.mag",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1044": {
+  "target": "system.weapons.3.range",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1045": {
+  "target": "system.weapons.3.mass",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1046": {
+  "target": "system.weapons.3.note",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1047": {
+  "target": "system.weapons.4.name",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1048": {
+  "target": "system.weapons.4.toHit",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1049": {
+  "target": "system.weapons.4.aim",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1050": {
+  "target": "system.weapons.4.recoil",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1051": {
+  "target": "system.weapons.4.bDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1052": {
+  "target": "system.weapons.4.xDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1053": {
+  "target": "system.weapons.4.mag",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1054": {
+  "target": "system.weapons.4.range",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1055": {
+  "target": "system.weapons.4.mass",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1056": {
+  "target": "system.weapons.4.note",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1057": {
+  "target": "system.weapons.5.name",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1058": {
+  "target": "system.weapons.5.toHit",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1059": {
+  "target": "system.weapons.5.aim",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1060": {
+  "target": "system.weapons.5.recoil",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1061": {
+  "target": "system.weapons.5.bDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1062": {
+  "target": "system.weapons.5.xDam",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1063": {
+  "target": "system.weapons.5.mag",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1064": {
+  "target": "system.weapons.5.range",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1065": {
+  "target": "system.weapons.5.mass",
+  "type": "string",
+  "array": "weapons"
+ },
+ "Text Field 1066": {
+  "target": "system.weapons.5.note",
+  "type": "string",
+  "array": "weapons"
+ }
+}

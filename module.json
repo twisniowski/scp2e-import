@@ -1,0 +1,35 @@
+{
+  "id": "scp2e-character-sheet",
+  "title": "SCP 2e Character Sheet",
+  "description": "A dynamic, editable SCP Foundation 2e character sheet for Foundry VTT, with one-click import from the official fillable PDF character sheet.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": 13,
+    "verified": 14
+  },
+  "authors": [
+    { "name": "Ash" }
+  ],
+  "esmodules": [
+    "scripts/module.js"
+  ],
+  "styles": [
+    "styles/scp2e.css"
+  ],
+  "languages": [
+    { "lang": "en", "name": "English", "path": "lang/en.json" }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "character": {
+        "htmlFields": ["smallItems", "storage", "aspectNotes", "miscNotes"]
+      }
+    }
+  },
+  "relationships": {
+    "systems": []
+  },
+  "url": "https://github.com/REPLACE_ME/scp2e-character-sheet",
+  "manifest": "https://raw.githubusercontent.com/REPLACE_ME/scp2e-character-sheet/main/module.json",
+  "download": "https://github.com/REPLACE_ME/scp2e-character-sheet/releases/latest/download/module.zip"
+}
