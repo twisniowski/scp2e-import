@@ -2,7 +2,7 @@
 
 A dynamic, editable character sheet for the **SCP Foundation tabletop RPG (2nd edition)**, with one-click import from the official fillable PDF character sheet.
 
-The module adds a self-contained Actor sub-type to Foundry, so it works in any world (including a blank/no-system world) without needing a full game system installed.
+The module adds an alternate Actor *sheet* (data stored in actor flags), so it works in any world under any game system — no custom actor type, no system conflicts.
 
 ## Features
 
@@ -19,7 +19,7 @@ The module adds a self-contained Actor sub-type to Foundry, so it works in any w
 **Manifest URL** (replace `REPLACE_ME` with the repository owner once published):
 
 ```
-https://raw.githubusercontent.com/REPLACE_ME/scp2e-character-sheet/main/module.json
+https://raw.githubusercontent.com/twisniowski/scp2e-import/main/module.json
 ```
 
 In Foundry: **Add-on Modules → Install Module → paste the manifest URL → Install**, then enable *SCP 2e Character Sheet* in your world.
@@ -28,8 +28,15 @@ In Foundry: **Add-on Modules → Install Module → paste the manifest URL → I
 
 ### Create a character
 
-1. In the **Actors** sidebar, click **Create Actor** and choose the **SCP Personnel** type.
-2. Open the actor to edit the sheet. Changes save automatically.
+This module does **not** add a new actor type. It adds an alternate **SCP 2e Sheet**
+that can be applied to any actor, storing its data in a flag — so it works under any
+game system without conflicts.
+
+1. In the **Actors** sidebar, click **Create Actor** (any name/type your world offers).
+2. Open the actor, then in the sheet's header click the **sheet-config** (gear/notebook)
+   control and choose **SCP 2e Sheet**, or right-click the actor in the directory →
+   **Configure** → **Sheet** → *SCP 2e Sheet*.
+3. Edit the sheet. Changes save automatically. (Importing a PDF sets this sheet for you.)
 
 ### Import from a PDF
 
@@ -55,19 +62,19 @@ api.importPdf(actor);       // fill an existing actor
 The official PDF uses generic field names (`Text Field 12`, `Check Box 88`), so a
 field map (`scripts/field-map.json`) was generated from the **geometry** of each
 form widget — matching value boxes to their printed labels by position. The map
-translates each PDF field to a path on the actor's data model. Regenerating the
+translates each PDF field to a path in the actor's SCP flag data. Regenerating the
 map is only necessary if the official sheet layout changes.
 
 ## Project structure
 
 ```
 scp2e-character-sheet/
-├─ module.json              Manifest (declares the Actor sub-type + htmlFields)
+├─ module.json              Manifest (registers the alternate sheet)
 ├─ scripts/
 │  ├─ module.js             Entry point: registers data model, sheet, import hooks
 │  ├─ const.js              Shared constants
 │  ├─ config.js             Attribute & skill definitions, reference tables
-│  ├─ data-model.js         TypeDataModel schema for the character
+│  ├─ data-model.js         Default flag-data shape + skill-cap helper
 │  ├─ sheet.js              ApplicationV2 character sheet
 │  ├─ pdf-import.js         PDF parsing & field mapping
 │  └─ field-map.json        PDF field → data path map (generated from geometry)
@@ -84,7 +91,7 @@ scp2e-character-sheet/
 ## Compatibility
 
 - Foundry VTT v13–v14.
-- No game system required (the module provides its own Actor sub-type).
+- Works under any game system (data lives in actor flags; no custom actor type).
 
 ## Credits & licensing
 

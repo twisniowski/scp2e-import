@@ -1,143 +1,63 @@
 /**
- * SCP 2e character TypeDataModel.
- * Mirrors the fields on the official SCP2e fillable character sheet so that an
- * imported PDF maps 1:1, while exposing a clean schema for the Foundry sheet.
+ * SCP 2e default data.
+ *
+ * Data is stored in an Actor flag (flags.scp2e-character-sheet.data) rather than
+ * a custom Actor sub-type, so the sheet works under ANY game system without the
+ * host system's Actor class choking on an unknown type. This module provides the
+ * default data shape and a normaliser that fills gaps in stored data.
  */
 import { ATTRIBUTES, SKILLS, DEPARTMENTS } from "./config.js";
 
-const fields = foundry.data.fields;
+/** A fresh, fully-zeroed SCP data object. */
+export function getDefaultData() {
+  const attributes = {};
+  for (const key of Object.keys(ATTRIBUTES)) attributes[key] = { value: 0 };
 
-/** Build the attribute schema: one rating per attribute. */
-function attributeSchema() {
-  const schema = {};
-  for (const key of Object.keys(ATTRIBUTES)) {
-    schema[key] = new fields.SchemaField({
-      value: new fields.NumberField({ required: true, integer: true, initial: 0, min: 0 })
-    });
+  const skills = {};
+  for (const key of Object.keys(SKILLS)) skills[key] = { value: 0 };
+
+  const departments = {};
+  for (const d of DEPARTMENTS) departments[d] = 0;
+
+  return {
+    identity: {
+      player: "", title: "", personnelClass: "", securityLevel: "",
+      age: "", disruptionClass: "", chaptersSurvived: 0
+    },
+    attributes,
+    skills,
+    customSkills: [],            // [{ name, gov, value }]
+    health: { hp: 0, maxHp: 0, baseHp: 0, dr: 0, hthMult: "" },
+    combat: { baseSpeed: 0, speed: "", combat: "", projectile: "", reaction: "", stagger: "" },
+    tracks: { exertion: 0, reverence: 0 },
+    weapons: [],                 // [{ name, toHit, aim, recoil, bDam, xDam, mag, range, mass, note }]
+    aspects: [],                 // [{ name, type, cost, page }]
+    uniforms: { aStyle: "", aSus: "", bStyle: "", bSus: "" },
+    smallItems: "", storage: "", aspectNotes: "", miscNotes: "",
+    departments
+  };
+}
+
+/** Deep-merge stored flag data over the defaults (arrays are taken as-is). */
+export function normalizeData(stored = {}) {
+  return foundry.utils.mergeObject(getDefaultData(), stored ?? {}, {
+    inplace: false, insertKeys: true, insertValues: true
+  });
+}
+
+/** Skill caps derived from attributes: half the governing attribute, rounded down. */
+export function computeSkillCaps(data) {
+  const caps = {};
+  for (const [key, def] of Object.entries(SKILLS)) {
+    const gov = Number(data?.attributes?.[def.gov]?.value ?? 0);
+    caps[key] = Math.floor(gov / 2);
   }
-  return new fields.SchemaField(schema);
+  return caps;
 }
 
-/** Build the skill schema: one rating per standard skill. */
-function skillSchema() {
-  const schema = {};
-  for (const key of Object.keys(SKILLS)) {
-    schema[key] = new fields.SchemaField({
-      value: new fields.NumberField({ required: true, integer: true, initial: 0, min: 0 })
-    });
-  }
-  return new fields.SchemaField(schema);
-}
-
-/** A custom (blank-row) skill the player wrote in by hand. */
-function customSkillField() {
-  return new fields.ArrayField(new fields.SchemaField({
-    name: new fields.StringField({ required: true, blank: true }),
-    gov: new fields.StringField({ required: false, blank: true, initial: "" }),
-    value: new fields.NumberField({ integer: true, initial: 0, min: 0 })
-  }));
-}
-
-/** Weapon row from the equipment table. */
-function weaponField() {
-  return new fields.ArrayField(new fields.SchemaField({
-    name:   new fields.StringField({ blank: true }),
-    toHit:  new fields.StringField({ blank: true }),
-    aim:    new fields.StringField({ blank: true }),
-    recoil: new fields.StringField({ blank: true }),
-    bDam:   new fields.StringField({ blank: true }),
-    xDam:   new fields.StringField({ blank: true }),
-    mag:    new fields.StringField({ blank: true }),
-    range:  new fields.StringField({ blank: true }),
-    mass:   new fields.StringField({ blank: true }),
-    note:   new fields.StringField({ blank: true })
-  }));
-}
-
-/** Aspect row (Power / Talent / History) from page 2. */
-function aspectField() {
-  return new fields.ArrayField(new fields.SchemaField({
-    name: new fields.StringField({ blank: true }),
-    cost: new fields.StringField({ blank: true }),
-    page: new fields.StringField({ blank: true }),
-    type: new fields.StringField({ blank: true, initial: "power" })
-  }));
-}
-
-export class SCP2eCharacterData extends foundry.abstract.TypeDataModel {
-  static defineSchema() {
-    const departments = {};
-    for (const d of DEPARTMENTS) {
-      departments[d] = new fields.NumberField({ integer: true, initial: 0 });
-    }
-
-    return {
-      // --- Identity -------------------------------------------------------
-      identity: new fields.SchemaField({
-        player:         new fields.StringField({ blank: true }),
-        title:          new fields.StringField({ blank: true }),
-        personnelClass: new fields.StringField({ blank: true }),
-        securityLevel:  new fields.StringField({ blank: true }),
-        age:            new fields.StringField({ blank: true }),
-        disruptionClass:new fields.StringField({ blank: true, initial: "" }),
-        chaptersSurvived: new fields.NumberField({ integer: true, initial: 0, min: 0 })
-      }),
-
-      // --- Core ratings ---------------------------------------------------
-      attributes: attributeSchema(),
-      skills: skillSchema(),
-      customSkills: customSkillField(),
-
-      // --- Health / derived combat (manual boxes on the sheet) -----------
-      health: new fields.SchemaField({
-        hp:       new fields.NumberField({ integer: true, initial: 0 }),
-        maxHp:    new fields.NumberField({ integer: true, initial: 0 }),
-        baseHp:   new fields.NumberField({ integer: true, initial: 0 }),
-        dr:       new fields.NumberField({ integer: true, initial: 0 }),
-        hthMult:  new fields.StringField({ blank: true })
-      }),
-      combat: new fields.SchemaField({
-        baseSpeed: new fields.NumberField({ integer: true, initial: 0 }),
-        speed:     new fields.StringField({ blank: true }),
-        combat:    new fields.StringField({ blank: true }),
-        projectile:new fields.StringField({ blank: true }),
-        reaction:  new fields.StringField({ blank: true }),
-        stagger:   new fields.StringField({ blank: true })
-      }),
-
-      // --- Tracks (exertion / reverence pip counts) ----------------------
-      tracks: new fields.SchemaField({
-        exertion:  new fields.NumberField({ integer: true, initial: 0, min: 0 }),
-        reverence: new fields.NumberField({ integer: true, initial: 0, min: 0 })
-      }),
-
-      // --- Gear / aspects / notes ----------------------------------------
-      weapons: weaponField(),
-      aspects: aspectField(),
-      uniforms: new fields.SchemaField({
-        aStyle: new fields.StringField({ blank: true }),
-        aSus:   new fields.StringField({ blank: true }),
-        bStyle: new fields.StringField({ blank: true }),
-        bSus:   new fields.StringField({ blank: true })
-      }),
-      smallItems: new fields.StringField({ blank: true }),
-      storage:    new fields.StringField({ blank: true }),
-      aspectNotes:new fields.StringField({ blank: true }),
-      miscNotes:  new fields.StringField({ blank: true }),
-      departments: new fields.SchemaField(departments)
-    };
-  }
-
-  /**
-   * Derived data: skill caps (half governing attribute, rounded down) and a
-   * convenience grouping for the sheet. Kept side-effect free and faithful to
-   * the rule printed on the sheet: "Skill Cap = 1/2 of governing attribute".
-   */
-  prepareDerivedData() {
-    this.skillCaps = {};
-    for (const [key, def] of Object.entries(SKILLS)) {
-      const gov = this.attributes?.[def.gov]?.value ?? 0;
-      this.skillCaps[key] = Math.floor(gov / 2);
-    }
-  }
-}
+/** Empty rows for the three editable tables. */
+export const EMPTY_ROWS = {
+  weapons: { name: "", toHit: "", aim: "", recoil: "", bDam: "", xDam: "", mag: "", range: "", mass: "", note: "" },
+  aspects: { name: "", type: "power", cost: "", page: "" },
+  customSkills: { name: "", gov: "", value: 0 }
+};

@@ -10,17 +10,17 @@
       </div>
       <div class="id-row">
         <label>{{localize "SCP2E.Field.Player"}}</label>
-        <input type="text" name="system.identity.player" value="{{system.identity.player}}"/>
+        <input type="text" name="flags.scp2e-character-sheet.data.identity.player" value="{{data.identity.player}}"/>
       </div>
       <div class="id-grid">
         <div><label>{{localize "SCP2E.Field.Title"}}</label>
-          <input type="text" name="system.identity.title" value="{{system.identity.title}}"/></div>
+          <input type="text" name="flags.scp2e-character-sheet.data.identity.title" value="{{data.identity.title}}"/></div>
         <div><label>{{localize "SCP2E.Field.PersonnelClass"}}</label>
-          <input type="text" name="system.identity.personnelClass" value="{{system.identity.personnelClass}}"/></div>
+          <input type="text" name="flags.scp2e-character-sheet.data.identity.personnelClass" value="{{data.identity.personnelClass}}"/></div>
         <div><label>{{localize "SCP2E.Field.Age"}}</label>
-          <input type="text" name="system.identity.age" value="{{system.identity.age}}"/></div>
+          <input type="text" name="flags.scp2e-character-sheet.data.identity.age" value="{{data.identity.age}}"/></div>
         <div><label>{{localize "SCP2E.Field.SecurityLevel"}}</label>
-          <input type="text" name="system.identity.securityLevel" value="{{system.identity.securityLevel}}"/></div>
+          <input type="text" name="flags.scp2e-character-sheet.data.identity.securityLevel" value="{{data.identity.securityLevel}}"/></div>
       </div>
     </div>
     <div class="scp2e-header-actions">
@@ -51,7 +51,7 @@
           <div class="attr-box">
             <span class="attr-label">{{label}}</span>
             <span class="attr-abbr">{{abbr}}</span>
-            <input type="number" name="system.attributes.{{key}}.value" value="{{value}}" min="0"/>
+            <input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.value" value="{{value}}" min="0"/>
           </div>
         {{/each}}
       </div>
@@ -61,7 +61,7 @@
           <div class="attr-box">
             <span class="attr-label">{{label}}</span>
             <span class="attr-abbr">{{abbr}}</span>
-            <input type="number" name="system.attributes.{{key}}.value" value="{{value}}" min="0"/>
+            <input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.value" value="{{value}}" min="0"/>
           </div>
         {{/each}}
       </div>
@@ -70,45 +70,45 @@
     <div class="vitals">
       <div class="vital hp">
         <label>{{localize "SCP2E.Field.HP"}}</label>
-        <input type="number" name="system.health.hp" value="{{system.health.hp}}"/>
+        <input type="number" name="flags.scp2e-character-sheet.data.health.hp" value="{{data.health.hp}}"/>
         <span class="sep">/</span>
-        <input type="number" name="system.health.maxHp" value="{{system.health.maxHp}}"/>
+        <input type="number" name="flags.scp2e-character-sheet.data.health.maxHp" value="{{data.health.maxHp}}"/>
       </div>
       <div class="vital"><label>{{localize "SCP2E.Field.BaseHP"}}</label>
-        <input type="number" name="system.health.baseHp" value="{{system.health.baseHp}}"/></div>
+        <input type="number" name="flags.scp2e-character-sheet.data.health.baseHp" value="{{data.health.baseHp}}"/></div>
       <div class="vital"><label>{{localize "SCP2E.Field.DR"}}</label>
-        <input type="number" name="system.health.dr" value="{{system.health.dr}}"/></div>
+        <input type="number" name="flags.scp2e-character-sheet.data.health.dr" value="{{data.health.dr}}"/></div>
       <div class="vital"><label>{{localize "SCP2E.Field.HTHx"}}</label>
-        <input type="text" name="system.health.hthMult" value="{{system.health.hthMult}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.health.hthMult" value="{{data.health.hthMult}}"/></div>
       <div class="vital"><label>{{localize "SCP2E.Field.BaseSpeed"}}</label>
-        <input type="number" name="system.combat.baseSpeed" value="{{system.combat.baseSpeed}}"/></div>
+        <input type="number" name="flags.scp2e-character-sheet.data.combat.baseSpeed" value="{{data.combat.baseSpeed}}"/></div>
     </div>
 
     <div class="tracks">
       <div class="track">
         <label>{{localize "SCP2E.Field.Exertion"}}</label>
         <button type="button" data-action="adjustTrack" data-track="exertion" data-delta="-1">−</button>
-        <span class="track-val">{{system.tracks.exertion}}</span>
+        <span class="track-val">{{data.tracks.exertion}}</span>
         <button type="button" data-action="adjustTrack" data-track="exertion" data-delta="1">+</button>
       </div>
       <div class="track">
         <label>{{localize "SCP2E.Field.Reverence"}}</label>
         <button type="button" data-action="adjustTrack" data-track="reverence" data-delta="-1">−</button>
-        <span class="track-val">{{system.tracks.reverence}}</span>
+        <span class="track-val">{{data.tracks.reverence}}</span>
         <button type="button" data-action="adjustTrack" data-track="reverence" data-delta="1">+</button>
       </div>
     </div>
 
     <div class="disruption">
       <label>{{localize "SCP2E.Field.DisruptionClass"}}</label>
-      <select name="system.identity.disruptionClass">
+      <select name="flags.scp2e-character-sheet.data.identity.disruptionClass">
         <option value="">—</option>
         {{#each disruptionClasses as |d key|}}
-          <option value="{{key}}" {{#if (eq ../system.identity.disruptionClass key)}}selected{{/if}}>{{d.label}} ({{d.ratio}})</option>
+          <option value="{{key}}" {{#if (eq ../data.identity.disruptionClass key)}}selected{{/if}}>{{d.label}} ({{d.ratio}})</option>
         {{/each}}
       </select>
       <label class="chapters">{{localize "SCP2E.Field.ChaptersSurvived"}}</label>
-      <input type="number" name="system.identity.chaptersSurvived" value="{{system.identity.chaptersSurvived}}" min="0"/>
+      <input type="number" name="flags.scp2e-character-sheet.data.identity.chaptersSurvived" value="{{data.identity.chaptersSurvived}}" min="0"/>
     </div>
   </div>
   {{/if}}
@@ -122,7 +122,7 @@
         <div class="skill-row crucial">
           <span class="skill-name">{{label}}</span>
           <span class="skill-gov">{{gov}}</span>
-          <input type="number" name="system.skills.{{key}}.value" value="{{value}}" min="0"/>
+          <input type="number" name="flags.scp2e-character-sheet.data.skills.{{key}}.value" value="{{value}}" min="0"/>
           <span class="skill-cap" title="{{localize 'SCP2E.Skills.Cap'}}">/{{cap}}</span>
         </div>
       {{/each}}
@@ -134,23 +134,23 @@
         <div class="skill-row">
           <span class="skill-name">{{label}}</span>
           <span class="skill-gov">{{gov}}</span>
-          <input type="number" name="system.skills.{{key}}.value" value="{{value}}" min="0"/>
+          <input type="number" name="flags.scp2e-character-sheet.data.skills.{{key}}.value" value="{{value}}" min="0"/>
           <span class="skill-cap" title="{{localize 'SCP2E.Skills.Cap'}}">/{{cap}}</span>
         </div>
       {{/each}}
     </div>
 
     <h3>{{localize "SCP2E.Skills.Custom"}}
-      <button type="button" class="add-row" data-action="addCustomSkill" data-array="system.customSkills">
+      <button type="button" class="add-row" data-action="addCustomSkill" data-array="customSkills">
         <i class="fa-solid fa-plus"></i></button>
     </h3>
     <div class="skill-list">
-      {{#each system.customSkills as |skill i|}}
+      {{#each data.customSkills as |skill i|}}
         <div class="skill-row custom">
-          <input type="text" class="custom-name" name="system.customSkills.{{i}}.name" value="{{skill.name}}" placeholder="{{localize 'SCP2E.Skills.CustomName'}}"/>
-          <input type="text" class="custom-gov" name="system.customSkills.{{i}}.gov" value="{{skill.gov}}" placeholder="ATTR"/>
-          <input type="number" name="system.customSkills.{{i}}.value" value="{{skill.value}}" min="0"/>
-          <button type="button" class="del-row" data-action="deleteCustomSkill" data-array="system.customSkills" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button>
+          <input type="text" class="custom-name" name="flags.scp2e-character-sheet.data.customSkills.{{i}}.name" value="{{skill.name}}" placeholder="{{localize 'SCP2E.Skills.CustomName'}}"/>
+          <input type="text" class="custom-gov" name="flags.scp2e-character-sheet.data.customSkills.{{i}}.gov" value="{{skill.gov}}" placeholder="ATTR"/>
+          <input type="number" name="flags.scp2e-character-sheet.data.customSkills.{{i}}.value" value="{{skill.value}}" min="0"/>
+          <button type="button" class="del-row" data-action="deleteCustomSkill" data-array="customSkills" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button>
         </div>
       {{/each}}
     </div>
@@ -162,19 +162,19 @@
   <div class="scp2e-combat">
     <div class="combat-derived">
       <div><label>{{localize "SCP2E.Field.Speed"}}</label>
-        <input type="text" name="system.combat.speed" value="{{system.combat.speed}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.combat.speed" value="{{data.combat.speed}}"/></div>
       <div><label>{{localize "SCP2E.Field.Combat"}}</label>
-        <input type="text" name="system.combat.combat" value="{{system.combat.combat}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.combat.combat" value="{{data.combat.combat}}"/></div>
       <div><label>{{localize "SCP2E.Field.Projectile"}}</label>
-        <input type="text" name="system.combat.projectile" value="{{system.combat.projectile}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.combat.projectile" value="{{data.combat.projectile}}"/></div>
       <div><label>{{localize "SCP2E.Field.Reaction"}}</label>
-        <input type="text" name="system.combat.reaction" value="{{system.combat.reaction}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.combat.reaction" value="{{data.combat.reaction}}"/></div>
       <div><label>{{localize "SCP2E.Field.Stagger"}}</label>
-        <input type="text" name="system.combat.stagger" value="{{system.combat.stagger}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.combat.stagger" value="{{data.combat.stagger}}"/></div>
     </div>
 
     <h3>{{localize "SCP2E.Weapons.Title"}}
-      <button type="button" class="add-row" data-action="addWeapon" data-array="system.weapons"><i class="fa-solid fa-plus"></i></button>
+      <button type="button" class="add-row" data-action="addWeapon" data-array="weapons"><i class="fa-solid fa-plus"></i></button>
     </h3>
     <table class="weapons">
       <thead><tr>
@@ -185,19 +185,19 @@
         <th>{{localize "SCP2E.Weapons.Mass"}}</th><th>{{localize "SCP2E.Weapons.Note"}}</th><th></th>
       </tr></thead>
       <tbody>
-      {{#each system.weapons as |w i|}}
+      {{#each data.weapons as |w i|}}
         <tr>
-          <td><input type="text" name="system.weapons.{{i}}.name" value="{{w.name}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.toHit" value="{{w.toHit}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.aim" value="{{w.aim}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.recoil" value="{{w.recoil}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.bDam" value="{{w.bDam}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.xDam" value="{{w.xDam}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.mag" value="{{w.mag}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.range" value="{{w.range}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.mass" value="{{w.mass}}"/></td>
-          <td><input type="text" name="system.weapons.{{i}}.note" value="{{w.note}}"/></td>
-          <td><button type="button" class="del-row" data-action="deleteWeapon" data-array="system.weapons" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.name" value="{{w.name}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.toHit" value="{{w.toHit}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.aim" value="{{w.aim}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.recoil" value="{{w.recoil}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.bDam" value="{{w.bDam}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.xDam" value="{{w.xDam}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.mag" value="{{w.mag}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.range" value="{{w.range}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.mass" value="{{w.mass}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.note" value="{{w.note}}"/></td>
+          <td><button type="button" class="del-row" data-action="deleteWeapon" data-array="weapons" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button></td>
         </tr>
       {{/each}}
       </tbody>
@@ -205,13 +205,13 @@
 
     <div class="uniforms">
       <div><label>{{localize "SCP2E.Uniform.AStyle"}}</label>
-        <input type="text" name="system.uniforms.aStyle" value="{{system.uniforms.aStyle}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.uniforms.aStyle" value="{{data.uniforms.aStyle}}"/></div>
       <div><label>{{localize "SCP2E.Uniform.ASus"}}</label>
-        <input type="text" name="system.uniforms.aSus" value="{{system.uniforms.aSus}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.uniforms.aSus" value="{{data.uniforms.aSus}}"/></div>
       <div><label>{{localize "SCP2E.Uniform.BStyle"}}</label>
-        <input type="text" name="system.uniforms.bStyle" value="{{system.uniforms.bStyle}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.uniforms.bStyle" value="{{data.uniforms.bStyle}}"/></div>
       <div><label>{{localize "SCP2E.Uniform.BSus"}}</label>
-        <input type="text" name="system.uniforms.bSus" value="{{system.uniforms.bSus}}"/></div>
+        <input type="text" name="flags.scp2e-character-sheet.data.uniforms.bSus" value="{{data.uniforms.bSus}}"/></div>
     </div>
   </div>
   {{/if}}
@@ -220,7 +220,7 @@
   {{#if (eq activeTab "aspects")}}
   <div class="scp2e-aspects">
     <h3>{{localize "SCP2E.Aspects.Title"}}
-      <button type="button" class="add-row" data-action="addAspect" data-array="system.aspects"><i class="fa-solid fa-plus"></i></button>
+      <button type="button" class="add-row" data-action="addAspect" data-array="aspects"><i class="fa-solid fa-plus"></i></button>
     </h3>
     <table class="aspects">
       <thead><tr>
@@ -228,17 +228,17 @@
         <th>{{localize "SCP2E.Aspects.Cost"}}</th><th>{{localize "SCP2E.Aspects.Page"}}</th><th></th>
       </tr></thead>
       <tbody>
-      {{#each system.aspects as |a i|}}
+      {{#each data.aspects as |a i|}}
         <tr>
-          <td><input type="text" name="system.aspects.{{i}}.name" value="{{a.name}}"/></td>
-          <td><select name="system.aspects.{{i}}.type">
+          <td><input type="text" name="flags.scp2e-character-sheet.data.aspects.{{i}}.name" value="{{a.name}}"/></td>
+          <td><select name="flags.scp2e-character-sheet.data.aspects.{{i}}.type">
             <option value="power" {{#if (eq a.type "power")}}selected{{/if}}>{{localize "SCP2E.Aspects.Power"}}</option>
             <option value="talent" {{#if (eq a.type "talent")}}selected{{/if}}>{{localize "SCP2E.Aspects.Talent"}}</option>
             <option value="history" {{#if (eq a.type "history")}}selected{{/if}}>{{localize "SCP2E.Aspects.History"}}</option>
           </select></td>
-          <td><input type="text" name="system.aspects.{{i}}.cost" value="{{a.cost}}"/></td>
-          <td><input type="text" name="system.aspects.{{i}}.page" value="{{a.page}}"/></td>
-          <td><button type="button" class="del-row" data-action="deleteAspect" data-array="system.aspects" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.aspects.{{i}}.cost" value="{{a.cost}}"/></td>
+          <td><input type="text" name="flags.scp2e-character-sheet.data.aspects.{{i}}.page" value="{{a.page}}"/></td>
+          <td><button type="button" class="del-row" data-action="deleteAspect" data-array="aspects" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button></td>
         </tr>
       {{/each}}
       </tbody>
@@ -248,12 +248,12 @@
     <div class="departments">
       {{#each departments}}
         <div class="dept"><label>{{key}}</label>
-          <input type="number" name="system.departments.{{key}}" value="{{value}}"/></div>
+          <input type="number" name="flags.scp2e-character-sheet.data.departments.{{key}}" value="{{value}}"/></div>
       {{/each}}
     </div>
 
     <h3>{{localize "SCP2E.Field.AspectNotes"}}</h3>
-    <textarea class="notes-area" name="system.aspectNotes" rows="5">{{system.aspectNotes}}</textarea>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.aspectNotes" rows="5">{{data.aspectNotes}}</textarea>
   </div>
   {{/if}}
 
@@ -261,11 +261,11 @@
   {{#if (eq activeTab "notes")}}
   <div class="scp2e-notes">
     <h3>{{localize "SCP2E.Field.SmallItems"}}</h3>
-    <textarea class="notes-area" name="system.smallItems" rows="5">{{system.smallItems}}</textarea>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.smallItems" rows="5">{{data.smallItems}}</textarea>
     <h3>{{localize "SCP2E.Field.Storage"}}</h3>
-    <textarea class="notes-area" name="system.storage" rows="5">{{system.storage}}</textarea>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.storage" rows="5">{{data.storage}}</textarea>
     <h3>{{localize "SCP2E.Field.MiscNotes"}}</h3>
-    <textarea class="notes-area" name="system.miscNotes" rows="8">{{system.miscNotes}}</textarea>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.miscNotes" rows="8">{{data.miscNotes}}</textarea>
   </div>
   {{/if}}
 

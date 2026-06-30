@@ -1,12 +1,20 @@
 /**
  * SCP 2e character sheet (ApplicationV2 / HandlebarsApplicationMixin).
+ *
+ * Stores all data in an Actor flag rather than a custom Actor sub-type, so it can
+ * be applied to a normal actor under any game system. Register via
+ * Actors.registerSheet so the user can pick "SCP 2e Sheet" for any actor.
  */
 import { ATTRIBUTES, SKILLS, DISRUPTION_CLASSES, DEPARTMENTS } from "./config.js";
+import { normalizeData, computeSkillCaps, EMPTY_ROWS } from "./data-model.js";
 import { promptPdfImport } from "./pdf-import.js";
-import { MODULE_ID } from "./const.js";
+import { MODULE_ID, FLAG_KEY } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
+
+/** Array-valued flag keys that need object->array fixup on submit. */
+const ARRAY_KEYS = ["weapons", "aspects", "customSkills"];
 
 export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
@@ -34,12 +42,19 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
   /** The active tab, persisted across re-renders. */
   tabGroups = { primary: "main" };
 
+  /** Current SCP data (defaults merged with stored flag). */
+  get scpData() {
+    return normalizeData(this.actor.getFlag(MODULE_ID, FLAG_KEY));
+  }
+
   /** @override */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
-    const sys = this.actor.system;
+    const data = this.scpData;
+    const caps = computeSkillCaps(data);
+
     context.actor = this.actor;
-    context.system = sys;
+    context.data = data;
     context.editable = this.isEditable;
     context.activeTab = this.tabGroups.primary;
 
@@ -47,7 +62,7 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     context.physical = [];
     context.mental = [];
     for (const [key, def] of Object.entries(ATTRIBUTES)) {
-      const entry = { key, abbr: def.abbr, label: game.i18n.localize(def.label), value: sys.attributes[key].value };
+      const entry = { key, abbr: def.abbr, label: game.i18n.localize(def.label), value: data.attributes[key]?.value ?? 0 };
       (def.group === "physical" ? context.physical : context.mental).push(entry);
     }
 
@@ -57,14 +72,14 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       label: game.i18n.localize(def.label),
       gov: ATTRIBUTES[def.gov].abbr,
       crucial: !!def.crucial,
-      value: sys.skills[key].value,
-      cap: sys.skillCaps?.[key] ?? 0
+      value: data.skills[key]?.value ?? 0,
+      cap: caps[key] ?? 0
     }));
     context.crucialSkills = context.skills.filter((s) => s.crucial);
     context.standardSkills = context.skills.filter((s) => !s.crucial);
 
     context.disruptionClasses = DISRUPTION_CLASSES;
-    context.departments = DEPARTMENTS.map((d) => ({ key: d, value: sys.departments[d] ?? 0 }));
+    context.departments = DEPARTMENTS.map((dep) => ({ key: dep, value: data.departments[dep] ?? 0 }));
 
     context.tabs = [
       { id: "main", label: "SCP2E.Tab.Main", icon: "fa-solid fa-id-card" },
@@ -78,12 +93,21 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
   }
 
   /**
-   * Wrap document submission so any save error is logged with full context
-   * instead of surfacing as an opaque toast, and so a failed save doesn't
-   * leave the sheet looking broken.
+   * Foundry expands `...weapons.0.name` form fields into an object keyed by
+   * index ({0:{...}}). Convert those back into real arrays before saving, since
+   * flags have no DataModel to cast them.
    */
   async _processSubmitData(event, form, submitData, options) {
     try {
+      const node = submitData?.flags?.[MODULE_ID]?.[FLAG_KEY];
+      if (node) {
+        for (const key of ARRAY_KEYS) {
+          const v = node[key];
+          if (v && !Array.isArray(v) && typeof v === "object") {
+            node[key] = Object.keys(v).sort((a, b) => Number(a) - Number(b)).map((k) => v[k]);
+          }
+        }
+      }
       return await super._processSubmitData(event, form, submitData, options);
     } catch (err) {
       console.error("SCP2e | save failed. Submitted data:", submitData, "\nError:", err);
@@ -104,19 +128,13 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     this.render();
   }
 
-  /** Read a system array as a plain (deep-cloned) JS array. */
-  #plainArray(path) {
-    const key = path.replace(/^system\./, "");
-    const src = this.actor.system.toObject(); // plain object, safe to mutate
-    return Array.isArray(src[key]) ? src[key] : [];
-  }
-
-  /** Generic add-row handler. `data-array` names the system array path. */
+  /** Generic add-row handler. `data-array` is the array key (weapons/aspects/customSkills). */
   static async #onAddRow(event, target) {
     try {
-      const path = target.dataset.array; // e.g. "system.weapons"
-      const next = this.#plainArray(path).concat([{}]);
-      await this.actor.update({ [path]: next });
+      const key = target.dataset.array;
+      const rows = foundry.utils.deepClone(this.scpData[key] ?? []);
+      rows.push(foundry.utils.deepClone(EMPTY_ROWS[key] ?? {}));
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.${key}`, rows);
     } catch (err) {
       console.error("SCP2e | add-row failed:", err);
       ui.notifications.error("SCP2e: could not add row (see console).");
@@ -126,10 +144,10 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
   /** Generic delete-row handler. `data-index` is the array index to remove. */
   static async #onDeleteRow(event, target) {
     try {
-      const path = target.dataset.array;
+      const key = target.dataset.array;
       const index = Number(target.dataset.index);
-      const next = this.#plainArray(path).filter((_, i) => i !== index);
-      await this.actor.update({ [path]: next });
+      const rows = (this.scpData[key] ?? []).filter((_, i) => i !== index);
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.${key}`, rows);
     } catch (err) {
       console.error("SCP2e | delete-row failed:", err);
       ui.notifications.error("SCP2e: could not delete row (see console).");
@@ -141,9 +159,8 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     try {
       const track = target.dataset.track;
       const delta = Number(target.dataset.delta);
-      const path = `system.tracks.${track}`;
-      const value = Math.max(0, (foundry.utils.getProperty(this.actor, path) ?? 0) + delta);
-      await this.actor.update({ [path]: value });
+      const current = Number(this.scpData.tracks?.[track] ?? 0);
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.tracks.${track}`, Math.max(0, current + delta));
     } catch (err) {
       console.error("SCP2e | track adjust failed:", err);
       ui.notifications.error("SCP2e: could not update track (see console).");

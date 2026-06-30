@@ -1,61 +1,49 @@
 /**
  * SCP 2e Character Sheet — module entry point.
  *
- * Registers a module-provided Actor sub-type (`scp2e-character-sheet.character`)
- * with its TypeDataModel and ApplicationV2 sheet, plus a PDF import entry point
- * in the Actors directory and a convenience global API.
+ * Rather than defining a custom Actor sub-type (which breaks under game systems
+ * that don't recognise it), this registers an ALTERNATE Actor sheet that stores
+ * all SCP data in an Actor flag. Apply it to any actor via the sheet picker, or
+ * create one straight from a PDF.
  */
-import { MODULE_ID, CHARACTER_TYPE } from "./const.js";
+import { MODULE_ID } from "./const.js";
 import { SCP2E } from "./config.js";
-import { SCP2eCharacterData } from "./data-model.js";
 import { SCP2eCharacterSheet } from "./sheet.js";
 import { promptPdfImport } from "./pdf-import.js";
 
 Hooks.once("init", () => {
   console.log(`${MODULE_ID} | Initializing SCP 2e Character Sheet`);
-
-  // Expose config for macros / other modules.
   CONFIG.SCP2E = SCP2E;
 
-  // Register the data model for our actor sub-type.
-  Object.assign(CONFIG.Actor.dataModels, { [CHARACTER_TYPE]: SCP2eCharacterData });
+  // Register Handlebars helpers used by the sheet (defensively).
+  if (!Handlebars.helpers.eq) Handlebars.registerHelper("eq", (a, b) => a === b);
 
-  // Register the sheet for our sub-type and make it the default.
+  // Determine which actor types exist in the active system, excluding the base.
+  const types = (game.documentTypes?.Actor ?? Actor.TYPES ?? []).filter((t) => t !== CONST.BASE_DOCUMENT_TYPE);
+
+  // Register our sheet as a selectable (non-default) sheet for every actor type,
+  // so it can overlay any system's actors without replacing their own sheet.
   foundry.applications.apps.DocumentSheetConfig.registerSheet(
     Actor, MODULE_ID, SCP2eCharacterSheet,
     {
-      types: [CHARACTER_TYPE],
-      makeDefault: true,
+      types: types.length ? types : undefined,
+      makeDefault: false,
       label: "SCP2E.SheetLabel"
     }
   );
-
-  // Register Handlebars helpers used by the sheet. `eq` is registered defensively
-  // since it is not guaranteed to exist across all Foundry versions.
-  if (!Handlebars.helpers.eq) {
-    Handlebars.registerHelper("eq", (a, b) => a === b);
-  }
-  Handlebars.registerHelper("scp2eRepeat", (n, block) => {
-    let out = "";
-    for (let i = 0; i < n; i++) out += block.fn(i);
-    return out;
-  });
 });
 
 Hooks.once("ready", () => {
-  // Public API for macros: game.modules.get(MODULE_ID).api.importPdf()
   const mod = game.modules.get(MODULE_ID);
-  if (mod) mod.api = { importPdf: promptPdfImport, CHARACTER_TYPE };
+  if (mod) mod.api = { importPdf: promptPdfImport };
 });
 
 /**
- * Add an "Import SCP PDF" button to the Actors directory footer so players can
- * create a character straight from a filled-in PDF.
+ * Add an "Import SCP PDF" button to the Actors directory footer.
  */
 Hooks.on("renderActorDirectory", (app, html) => {
   const root = html instanceof HTMLElement ? html : html?.[0];
-  if (!root) return;
-  if (root.querySelector(".scp2e-import-pdf")) return;
+  if (!root || root.querySelector(".scp2e-import-pdf")) return;
 
   const footer = root.querySelector(".directory-footer") ?? root.querySelector(".header-actions");
   const button = document.createElement("button");
