@@ -1,16 +1,20 @@
 /**
  * SCP 2e dice roller.
  *
- * Pool dice are d6/d8/d10/d12. Only a 12 on a d12 explodes, adding a single d20
- * (which does not explode further). All rolled dice are candidates; the highest
- * two are summed. For a skill roll, the skill's value is added to that sum.
+ * Pool dice are d6/d8/d10/d12. Every die explodes into ONE die of the next type
+ * up when it rolls its maximum face (6 on a d6 -> +1d8, 8 on a d8 -> +1d10,
+ * 10 -> +1d12, 12 -> +1d20). Bonus dice can themselves explode the same way. The
+ * only die that does NOT explode is the d20.
  *
- * The chat card reports the result only — no difficulty comparison, no pass/fail,
- * no critical labels.
+ * All rolled dice are candidates; the highest two are summed. For a skill roll,
+ * the skill's value is added to that sum. The chat card reports the result only —
+ * no difficulty comparison, no pass/fail, no critical labels.
  */
 import { ATTRIBUTES, SKILLS } from "./config.js";
 
-const POOL_FACES = [6, 8, 10, 12];
+const POOL_FACES = [6, 8, 10, 12];           // editable pool dice
+const ORDER = [6, 8, 10, 12, 20];            // ascending so explosions cascade in one pass
+const NEXT_FACE = { 6: 8, 8: 10, 10: 12, 12: 20, 20: null };
 
 /**
  * Roll an attribute pool (optionally as a skill check).
@@ -24,39 +28,40 @@ export async function rollPool(actor, data, attrKey, { skillKey = null } = {}) {
   const attr = data.attributes?.[attrKey] ?? {};
   const pool = attr.dice ?? {};
 
-  // Build the base formula from the pool counts.
-  const terms = [];
-  for (const f of POOL_FACES) {
-    const n = Math.max(0, Number(pool[`d${f}`] ?? 0));
-    if (n > 0) terms.push(`${n}d${f}`);
-  }
-  if (!terms.length) {
+  // Base pool counts (d20 always starts at 0; it only appears via explosions).
+  const base = { 6: 0, 8: 0, 10: 0, 12: 0, 20: 0 };
+  for (const f of POOL_FACES) base[f] = Math.max(0, Number(pool[`d${f}`] ?? 0));
+  if (!POOL_FACES.some((f) => base[f] > 0)) {
     ui.notifications.warn(
       game.i18n.format("SCP2E.Roll.NoDice", { attr: game.i18n.localize(ATTRIBUTES[attrKey].label) })
     );
     return null;
   }
 
-  // Roll the base pool.
-  const baseRoll = await new Roll(terms.join(" + ")).evaluate();
-  const dice = [];           // { faces, value, exploded? }
-  let twelves = 0;
-  for (const term of baseRoll.dice) {
-    for (const r of term.results) {
-      if (r.active === false) continue;
-      dice.push({ faces: term.faces, value: r.result });
-      if (term.faces === 12 && r.result === 12) twelves++;
-    }
-  }
+  // Roll ascending; a max face adds one die of the next type up, which is rolled
+  // later in the same pass (cascading explosions). The d20 never explodes.
+  const counts = { ...base };
+  const dice = [];           // { faces, value, exploded (rolled max), bonus (added by an explosion) }
+  const rolls = [];
+  for (const f of ORDER) {
+    const n = counts[f] ?? 0;
+    if (n <= 0) continue;
+    const roll = await new Roll(`${n}d${f}`).evaluate();
+    rolls.push(roll);
 
-  // Each 12 on a d12 explodes into one d20 (which does not explode).
-  const rolls = [baseRoll];
-  if (twelves > 0) {
-    const bonus = await new Roll(`${twelves}d20`).evaluate();
-    rolls.push(bonus);
-    for (const term of bonus.dice) {
-      for (const r of term.results) dice.push({ faces: 20, value: r.result, fromExplosion: true });
+    let idx = 0;
+    let maxes = 0;
+    for (const term of roll.dice) {
+      for (const r of term.results) {
+        if (r.active === false) continue;
+        const isMax = r.result === f && NEXT_FACE[f] !== null;
+        dice.push({ faces: f, value: r.result, exploded: isMax, bonus: idx >= base[f] });
+        if (isMax) maxes++;
+        idx++;
+      }
     }
+    const nxt = NEXT_FACE[f];
+    if (nxt !== null && maxes > 0) counts[nxt] = (counts[nxt] ?? 0) + maxes;
   }
 
   // Keep the highest two dice.
@@ -75,10 +80,10 @@ export async function rollPool(actor, data, attrKey, { skillKey = null } = {}) {
 
   // Build the chat card.
   const attrLabel = game.i18n.localize(ATTRIBUTES[attrKey].label);
-  const poolDesc = terms.join(", ");
+  const poolDesc = POOL_FACES.filter((f) => base[f] > 0).map((f) => `${base[f]}d${f}`).join(", ");
   const diceHtml = dice.map((dd, i) => {
-    const cls = ["scp-die", keptIdx.has(i) ? "kept" : "", dd.fromExplosion ? "boom" : ""].filter(Boolean).join(" ");
-    const mark = dd.faces === 12 && dd.value === 12 ? " ⚡" : "";
+    const cls = ["scp-die", keptIdx.has(i) ? "kept" : "", dd.bonus ? "boom" : ""].filter(Boolean).join(" ");
+    const mark = dd.exploded ? " ⚡" : "";
     return `<span class="${cls}">d${dd.faces}:${dd.value}${mark}</span>`;
   }).join(" ");
 
