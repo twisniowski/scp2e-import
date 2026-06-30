@@ -38,6 +38,7 @@
 .tab-body h3 {
   font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 6px;
   border-bottom: 2px solid #333; padding-bottom: 2px; display: flex; align-items: center; gap: 8px;
+  color: #1a1a1a;
 }
 .tab-body input, .tab-body select, .tab-body textarea {
   background: #fff; border: 1px solid #aaa; border-radius: 3px; padding: 2px 4px;
@@ -46,6 +47,7 @@
 .tab-body input::placeholder { color: #999; }
 .tab-body input[type="number"] { width: 48px; text-align: center; }
 .notes-area { width: 100%; text-align: left; resize: vertical; font-family: inherit; }
+.tab-body label, .tab-body .skill-name, .tab-body .skill-cap { color: #1a1a1a; }
 
 /* Attributes */
 .attr-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
