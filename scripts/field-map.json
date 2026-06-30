@@ -79,138 +79,6 @@
   "target": "system.attributes.fate.value",
   "type": "number"
  },
- "Text Field 11": {
-  "target": "system.skills.awareness.value",
-  "type": "number"
- },
- "Text Field 13": {
-  "target": "system.skills.dodge.value",
-  "type": "number"
- },
- "Text Field 16": {
-  "target": "system.skills.firearms.value",
-  "type": "number"
- },
- "Text Field 17": {
-  "target": "system.skills.melee.value",
-  "type": "number"
- },
- "Text Field 19": {
-  "target": "system.skills.animalKen.value",
-  "type": "number"
- },
- "Text Field 21": {
-  "target": "system.skills.anomalistics.value",
-  "type": "number"
- },
- "Text Field 23": {
-  "target": "system.skills.athletics.value",
-  "type": "number"
- },
- "Text Field 25": {
-  "target": "system.skills.brawn.value",
-  "type": "number"
- },
- "Text Field 27": {
-  "target": "system.skills.breakFree.value",
-  "type": "number"
- },
- "Text Field 29": {
-  "target": "system.skills.computers.value",
-  "type": "number"
- },
- "Text Field 31": {
-  "target": "system.skills.creativity.value",
-  "type": "number"
- },
- "Text Field 33": {
-  "target": "system.skills.deceive.value",
-  "type": "number"
- },
- "Text Field 35": {
-  "target": "system.skills.disarm.value",
-  "type": "number"
- },
- "Text Field 37": {
-  "target": "system.skills.disguise.value",
-  "type": "number"
- },
- "Text Field 39": {
-  "target": "system.skills.intimidate.value",
-  "type": "number"
- },
- "Text Field 41": {
-  "target": "system.skills.intuition.value",
-  "type": "number"
- },
- "Text Field 43": {
-  "target": "system.skills.investigate.value",
-  "type": "number"
- },
- "Text Field 45": {
-  "target": "system.skills.mathematics.value",
-  "type": "number"
- },
- "Text Field 47": {
-  "target": "system.skills.mechanics.value",
-  "type": "number"
- },
- "Text Field 49": {
-  "target": "system.skills.medical.value",
-  "type": "number"
- },
- "Text Field 51": {
-  "target": "system.skills.navigate.value",
-  "type": "number"
- },
- "Text Field 53": {
-  "target": "system.skills.ordnance.value",
-  "type": "number"
- },
- "Text Field 55": {
-  "target": "system.skills.persuade.value",
-  "type": "number"
- },
- "Text Field 57": {
-  "target": "system.skills.poise.value",
-  "type": "number"
- },
- "Text Field 59": {
-  "target": "system.skills.psychology.value",
-  "type": "number"
- },
- "Text Field 61": {
-  "target": "system.skills.resilience.value",
-  "type": "number"
- },
- "Text Field 63": {
-  "target": "system.skills.resistDeath.value",
-  "type": "number"
- },
- "Text Field 65": {
-  "target": "system.skills.selfControl.value",
-  "type": "number"
- },
- "Text Field 67": {
-  "target": "system.skills.stealth.value",
-  "type": "number"
- },
- "Text Field 69": {
-  "target": "system.skills.teaching.value",
-  "type": "number"
- },
- "Text Field 71": {
-  "target": "system.skills.technology.value",
-  "type": "number"
- },
- "Text Field 73": {
-  "target": "system.skills.thievery.value",
-  "type": "number"
- },
- "Text Field 75": {
-  "target": "system.skills.vehicles.value",
-  "type": "number"
- },
  "Text Field 107": {
   "target": "system.weapons.0.name",
   "type": "string",
@@ -510,5 +378,417 @@
   "target": "system.weapons.5.note",
   "type": "string",
   "array": "weapons"
+ },
+ "Text Field 10": {
+  "target": "system.skills.awareness.value",
+  "type": "number"
+ },
+ "Text Field 11": {
+  "target": "system.skills.awareness.mult",
+  "type": "number"
+ },
+ "Text Field 12": {
+  "target": "system.skills.dodge.value",
+  "type": "number"
+ },
+ "Text Field 13": {
+  "target": "system.skills.dodge.mult",
+  "type": "number"
+ },
+ "Text Field 14": {
+  "target": "system.skills.firearms.value",
+  "type": "number"
+ },
+ "Text Field 16": {
+  "target": "system.skills.firearms.mult",
+  "type": "number"
+ },
+ "Text Field 15": {
+  "target": "system.skills.melee.value",
+  "type": "number"
+ },
+ "Text Field 17": {
+  "target": "system.skills.melee.mult",
+  "type": "number"
+ },
+ "Text Field 18": {
+  "target": "system.skills.animalKen.value",
+  "type": "number"
+ },
+ "Text Field 19": {
+  "target": "system.skills.animalKen.mult",
+  "type": "number"
+ },
+ "Text Field 20": {
+  "target": "system.skills.anomalistics.value",
+  "type": "number"
+ },
+ "Text Field 21": {
+  "target": "system.skills.anomalistics.mult",
+  "type": "number"
+ },
+ "Text Field 22": {
+  "target": "system.skills.athletics.value",
+  "type": "number"
+ },
+ "Text Field 23": {
+  "target": "system.skills.athletics.mult",
+  "type": "number"
+ },
+ "Text Field 24": {
+  "target": "system.skills.brawn.value",
+  "type": "number"
+ },
+ "Text Field 25": {
+  "target": "system.skills.brawn.mult",
+  "type": "number"
+ },
+ "Text Field 26": {
+  "target": "system.skills.breakFree.value",
+  "type": "number"
+ },
+ "Text Field 27": {
+  "target": "system.skills.breakFree.mult",
+  "type": "number"
+ },
+ "Text Field 28": {
+  "target": "system.skills.computers.value",
+  "type": "number"
+ },
+ "Text Field 29": {
+  "target": "system.skills.computers.mult",
+  "type": "number"
+ },
+ "Text Field 30": {
+  "target": "system.skills.creativity.value",
+  "type": "number"
+ },
+ "Text Field 31": {
+  "target": "system.skills.creativity.mult",
+  "type": "number"
+ },
+ "Text Field 32": {
+  "target": "system.skills.deceive.value",
+  "type": "number"
+ },
+ "Text Field 33": {
+  "target": "system.skills.deceive.mult",
+  "type": "number"
+ },
+ "Text Field 34": {
+  "target": "system.skills.disarm.value",
+  "type": "number"
+ },
+ "Text Field 35": {
+  "target": "system.skills.disarm.mult",
+  "type": "number"
+ },
+ "Text Field 36": {
+  "target": "system.skills.disguise.value",
+  "type": "number"
+ },
+ "Text Field 37": {
+  "target": "system.skills.disguise.mult",
+  "type": "number"
+ },
+ "Text Field 38": {
+  "target": "system.skills.intimidate.value",
+  "type": "number"
+ },
+ "Text Field 39": {
+  "target": "system.skills.intimidate.mult",
+  "type": "number"
+ },
+ "Text Field 40": {
+  "target": "system.skills.intuition.value",
+  "type": "number"
+ },
+ "Text Field 41": {
+  "target": "system.skills.intuition.mult",
+  "type": "number"
+ },
+ "Text Field 42": {
+  "target": "system.skills.investigate.value",
+  "type": "number"
+ },
+ "Text Field 43": {
+  "target": "system.skills.investigate.mult",
+  "type": "number"
+ },
+ "Text Field 44": {
+  "target": "system.skills.mathematics.value",
+  "type": "number"
+ },
+ "Text Field 45": {
+  "target": "system.skills.mathematics.mult",
+  "type": "number"
+ },
+ "Text Field 46": {
+  "target": "system.skills.mechanics.value",
+  "type": "number"
+ },
+ "Text Field 47": {
+  "target": "system.skills.mechanics.mult",
+  "type": "number"
+ },
+ "Text Field 48": {
+  "target": "system.skills.medical.value",
+  "type": "number"
+ },
+ "Text Field 49": {
+  "target": "system.skills.medical.mult",
+  "type": "number"
+ },
+ "Text Field 50": {
+  "target": "system.skills.navigate.value",
+  "type": "number"
+ },
+ "Text Field 51": {
+  "target": "system.skills.navigate.mult",
+  "type": "number"
+ },
+ "Text Field 52": {
+  "target": "system.skills.ordnance.value",
+  "type": "number"
+ },
+ "Text Field 53": {
+  "target": "system.skills.ordnance.mult",
+  "type": "number"
+ },
+ "Text Field 54": {
+  "target": "system.skills.persuade.value",
+  "type": "number"
+ },
+ "Text Field 55": {
+  "target": "system.skills.persuade.mult",
+  "type": "number"
+ },
+ "Text Field 56": {
+  "target": "system.skills.poise.value",
+  "type": "number"
+ },
+ "Text Field 57": {
+  "target": "system.skills.poise.mult",
+  "type": "number"
+ },
+ "Text Field 58": {
+  "target": "system.skills.psychology.value",
+  "type": "number"
+ },
+ "Text Field 59": {
+  "target": "system.skills.psychology.mult",
+  "type": "number"
+ },
+ "Text Field 60": {
+  "target": "system.skills.resilience.value",
+  "type": "number"
+ },
+ "Text Field 61": {
+  "target": "system.skills.resilience.mult",
+  "type": "number"
+ },
+ "Text Field 62": {
+  "target": "system.skills.resistDeath.value",
+  "type": "number"
+ },
+ "Text Field 63": {
+  "target": "system.skills.resistDeath.mult",
+  "type": "number"
+ },
+ "Text Field 64": {
+  "target": "system.skills.selfControl.value",
+  "type": "number"
+ },
+ "Text Field 65": {
+  "target": "system.skills.selfControl.mult",
+  "type": "number"
+ },
+ "Text Field 66": {
+  "target": "system.skills.stealth.value",
+  "type": "number"
+ },
+ "Text Field 67": {
+  "target": "system.skills.stealth.mult",
+  "type": "number"
+ },
+ "Text Field 68": {
+  "target": "system.skills.teaching.value",
+  "type": "number"
+ },
+ "Text Field 69": {
+  "target": "system.skills.teaching.mult",
+  "type": "number"
+ },
+ "Text Field 70": {
+  "target": "system.skills.technology.value",
+  "type": "number"
+ },
+ "Text Field 71": {
+  "target": "system.skills.technology.mult",
+  "type": "number"
+ },
+ "Text Field 72": {
+  "target": "system.skills.thievery.value",
+  "type": "number"
+ },
+ "Text Field 73": {
+  "target": "system.skills.thievery.mult",
+  "type": "number"
+ },
+ "Text Field 74": {
+  "target": "system.skills.vehicles.value",
+  "type": "number"
+ },
+ "Text Field 75": {
+  "target": "system.skills.vehicles.mult",
+  "type": "number"
+ },
+ "Text Field 93": {
+  "target": "system.combat.speed",
+  "type": "string"
+ },
+ "Text Field 92": {
+  "target": "system.combat.combat",
+  "type": "string"
+ },
+ "Text Field 91": {
+  "target": "system.combat.projectile",
+  "type": "string"
+ },
+ "Text Field 117": {
+  "target": "system.combat.reaction",
+  "type": "string"
+ },
+ "Text Field 118": {
+  "target": "system.combat.stagger",
+  "type": "string"
+ },
+ "Text Field 1010110": {
+  "target": "system.uniforms.aStyle",
+  "type": "string"
+ },
+ "Text Field 1010111": {
+  "target": "system.uniforms.aSus",
+  "type": "string"
+ },
+ "Text Field 1067": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 0
+ },
+ "Text Field 1068": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 1
+ },
+ "Text Field 1069": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 2
+ },
+ "Text Field 1070": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 3
+ },
+ "Text Field 1071": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 4
+ },
+ "Text Field 1072": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 5
+ },
+ "Text Field 1073": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 6
+ },
+ "Text Field 1074": {
+  "target": "system.everydayCarry",
+  "type": "string",
+  "group": "everydayCarry",
+  "order": 7
+ },
+ "Text Field 101093": {
+  "target": "system.smallItems",
+  "type": "string",
+  "group": "smallItems",
+  "order": 0
+ },
+ "Text Field 101095": {
+  "target": "system.smallItems",
+  "type": "string",
+  "group": "smallItems",
+  "order": 1
+ },
+ "Text Field 101097": {
+  "target": "system.smallItems",
+  "type": "string",
+  "group": "smallItems",
+  "order": 2
+ },
+ "Text Field 101099": {
+  "target": "system.smallItems",
+  "type": "string",
+  "group": "smallItems",
+  "order": 3
+ },
+ "Text Field 1010101": {
+  "target": "system.smallItems",
+  "type": "string",
+  "group": "smallItems",
+  "order": 4
+ },
+ "Text Field 1010103": {
+  "target": "system.smallItems",
+  "type": "string",
+  "group": "smallItems",
+  "order": 5
+ },
+ "Text Field 101094": {
+  "target": "system.storage",
+  "type": "string",
+  "group": "storage",
+  "order": 0
+ },
+ "Text Field 101096": {
+  "target": "system.storage",
+  "type": "string",
+  "group": "storage",
+  "order": 1
+ },
+ "Text Field 101098": {
+  "target": "system.storage",
+  "type": "string",
+  "group": "storage",
+  "order": 2
+ },
+ "Text Field 1010100": {
+  "target": "system.storage",
+  "type": "string",
+  "group": "storage",
+  "order": 3
+ },
+ "Text Field 1010102": {
+  "target": "system.storage",
+  "type": "string",
+  "group": "storage",
+  "order": 4
+ },
+ "Text Field 1010104": {
+  "target": "system.storage",
+  "type": "string",
+  "group": "storage",
+  "order": 5
  }
 }
