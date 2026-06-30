@@ -90,6 +90,8 @@
         <button type="button" data-action="adjustTrack" data-track="exertion" data-delta="-1">−</button>
         <span class="track-val">{{data.tracks.exertion}}</span>
         <button type="button" data-action="adjustTrack" data-track="exertion" data-delta="1">+</button>
+        <span class="sep">/</span>
+        <input type="number" class="track-total" name="flags.scp2e-character-sheet.data.tracks.exertionTotal" value="{{data.tracks.exertionTotal}}" min="0" title="{{localize 'SCP2E.Field.ExertionTotal'}}"/>
       </div>
       <div class="track">
         <label>{{localize "SCP2E.Field.Reverence"}}</label>
@@ -260,12 +262,14 @@
   {{!-- ============================ NOTES ============================ --}}
   {{#if (eq activeTab "notes")}}
   <div class="scp2e-notes">
+    <h3>{{localize "SCP2E.Field.EverydayCarry"}}</h3>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.everydayCarry" rows="4">{{data.everydayCarry}}</textarea>
     <h3>{{localize "SCP2E.Field.SmallItems"}}</h3>
-    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.smallItems" rows="5">{{data.smallItems}}</textarea>
-    <h3>{{localize "SCP2E.Field.Storage"}}</h3>
-    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.storage" rows="5">{{data.storage}}</textarea>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.smallItems" rows="4">{{data.smallItems}}</textarea>
+    <h3>{{localize "SCP2E.Field.Container"}}</h3>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.storage" rows="4">{{data.storage}}</textarea>
     <h3>{{localize "SCP2E.Field.MiscNotes"}}</h3>
-    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.miscNotes" rows="8">{{data.miscNotes}}</textarea>
+    <textarea class="notes-area" name="flags.scp2e-character-sheet.data.miscNotes" rows="6">{{data.miscNotes}}</textarea>
   </div>
   {{/if}}
 

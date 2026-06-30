@@ -2,16 +2,13 @@
   "TYPES.Actor.scp2e-character-sheet.character": "SCP Personnel",
   "SCP2E.SheetLabel": "SCP 2e Character Sheet",
   "SCP2E.NewCharacter": "New SCP Personnel",
-
   "SCP2E.Tab.Main": "Profile",
   "SCP2E.Tab.Skills": "Skills",
   "SCP2E.Tab.Combat": "Combat",
   "SCP2E.Tab.Aspects": "Aspects",
   "SCP2E.Tab.Notes": "Notes",
-
   "SCP2E.Group.Physical": "Physical",
   "SCP2E.Group.Mental": "Mental",
-
   "SCP2E.Field.Character": "Character",
   "SCP2E.Field.Player": "Player",
   "SCP2E.Field.Title": "Title",
@@ -36,7 +33,6 @@
   "SCP2E.Field.Storage": "Items in Storage",
   "SCP2E.Field.AspectNotes": "Aspect Notes",
   "SCP2E.Field.MiscNotes": "Misc Notes",
-
   "SCP2E.Attr.Strength": "Strength",
   "SCP2E.Attr.Dexterity": "Dexterity",
   "SCP2E.Attr.Perception": "Perception",
@@ -45,13 +41,11 @@
   "SCP2E.Attr.Willpower": "Willpower",
   "SCP2E.Attr.Charisma": "Charisma",
   "SCP2E.Attr.Fate": "Fate",
-
   "SCP2E.Skills.Crucial": "Crucial Skills",
   "SCP2E.Skills.Standard": "Skills",
   "SCP2E.Skills.Custom": "Custom Skills",
   "SCP2E.Skills.CustomName": "Skill name",
   "SCP2E.Skills.Cap": "Skill cap = ½ governing attribute",
-
   "SCP2E.Skill.Awareness": "Awareness",
   "SCP2E.Skill.Dodge": "Dodge",
   "SCP2E.Skill.Firearms": "Firearms",
@@ -85,7 +79,6 @@
   "SCP2E.Skill.Technology": "Technology",
   "SCP2E.Skill.Thievery": "Thievery",
   "SCP2E.Skill.Vehicles": "Vehicles",
-
   "SCP2E.Weapons.Title": "Weapons",
   "SCP2E.Weapons.Name": "Name",
   "SCP2E.Weapons.ToHit": "To-Hit",
@@ -97,12 +90,10 @@
   "SCP2E.Weapons.Range": "Range",
   "SCP2E.Weapons.Mass": "Mass",
   "SCP2E.Weapons.Note": "Note",
-
   "SCP2E.Uniform.AStyle": "Uniform A Style",
   "SCP2E.Uniform.ASus": "Uniform A SUS",
   "SCP2E.Uniform.BStyle": "Uniform B Style",
   "SCP2E.Uniform.BSus": "Uniform B SUS",
-
   "SCP2E.Aspects.Title": "Aspects",
   "SCP2E.Aspects.Name": "Name",
   "SCP2E.Aspects.Type": "Type",
@@ -111,10 +102,11 @@
   "SCP2E.Aspects.Power": "Power",
   "SCP2E.Aspects.Talent": "Talent",
   "SCP2E.Aspects.History": "History",
-
   "SCP2E.Departments.Title": "Department Favors",
-
   "SCP2E.Import.Button": "Import SCP PDF",
   "SCP2E.Import.Success": "Imported {name} ({count} PDF fields read).",
-  "SCP2E.Import.Failure": "Could not read that PDF. Make sure it is a filled-in SCP2e fillable character sheet."
+  "SCP2E.Import.Failure": "Could not read that PDF. Make sure it is a filled-in SCP2e fillable character sheet.",
+  "SCP2E.Field.ExertionTotal": "Total",
+  "SCP2E.Field.EverydayCarry": "Everyday Carry",
+  "SCP2E.Field.Container": "In Container"
 }

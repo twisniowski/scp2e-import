@@ -29,11 +29,11 @@ export function getDefaultData() {
     customSkills: [],            // [{ name, gov, value }]
     health: { hp: 0, maxHp: 0, baseHp: 0, dr: 0, hthMult: "" },
     combat: { baseSpeed: 0, speed: "", combat: "", projectile: "", reaction: "", stagger: "" },
-    tracks: { exertion: 0, reverence: 0 },
+    tracks: { exertion: 0, exertionTotal: 0, reverence: 0 },
     weapons: [],                 // [{ name, toHit, aim, recoil, bDam, xDam, mag, range, mass, note }]
     aspects: [],                 // [{ name, type, cost, page }]
     uniforms: { aStyle: "", aSus: "", bStyle: "", bSus: "" },
-    smallItems: "", storage: "", aspectNotes: "", miscNotes: "",
+    everydayCarry: "", smallItems: "", storage: "", aspectNotes: "", miscNotes: "",
     departments
   };
 }

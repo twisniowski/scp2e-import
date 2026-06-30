@@ -72,6 +72,8 @@
 .track button { width: 24px; height: 24px; border: 1px solid #777; background: #eee; border-radius: 3px; cursor: pointer; font-weight: 700; }
 .track button:hover { background: #ddd; }
 .track-val { min-width: 24px; text-align: center; font-weight: 700; font-size: 16px; }
+.track .sep { font-weight: 700; }
+.track-total { width: 44px; }
 
 .disruption { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .disruption label { font-size: 11px; text-transform: uppercase; font-weight: 700; }
