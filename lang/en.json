@@ -108,5 +108,9 @@
   "SCP2E.Import.Failure": "Could not read that PDF. Make sure it is a filled-in SCP2e fillable character sheet.",
   "SCP2E.Field.ExertionTotal": "Total",
   "SCP2E.Field.EverydayCarry": "Everyday Carry",
-  "SCP2E.Field.Container": "In Container"
+  "SCP2E.Field.Container": "In Container",
+  "SCP2E.Roll.Attribute": "Roll attribute pool",
+  "SCP2E.Roll.Skill": "Roll skill (governing attribute + skill)",
+  "SCP2E.Roll.Rating": "Attribute Rating (for automatic successes)",
+  "SCP2E.Roll.NoDice": "No dice in the {attr} pool — set d6/d8/d10/d12 counts first."
 }

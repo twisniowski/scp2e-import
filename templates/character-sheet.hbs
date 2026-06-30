@@ -49,9 +49,18 @@
         <h3 class="grp-physical">{{localize "SCP2E.Group.Physical"}}</h3>
         {{#each physical}}
           <div class="attr-box">
-            <span class="attr-label">{{label}}</span>
-            <span class="attr-abbr">{{abbr}}</span>
-            <input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.value" value="{{value}}" min="0"/>
+            <div class="attr-head">
+              <button type="button" class="roll-btn" data-action="rollAttribute" data-attr="{{key}}" title="{{localize 'SCP2E.Roll.Attribute'}}"><i class="fa-solid fa-dice-d20"></i></button>
+              <span class="attr-label">{{label}}</span>
+              <span class="attr-abbr">{{abbr}}</span>
+              <input type="number" class="attr-rating" name="flags.scp2e-character-sheet.data.attributes.{{key}}.value" value="{{value}}" min="0" title="{{localize 'SCP2E.Roll.Rating'}}"/>
+            </div>
+            <div class="attr-pool">
+              <label>d6</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d6" value="{{dice.d6}}" min="0"/>
+              <label>d8</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d8" value="{{dice.d8}}" min="0"/>
+              <label>d10</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d10" value="{{dice.d10}}" min="0"/>
+              <label>d12</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d12" value="{{dice.d12}}" min="0"/>
+            </div>
           </div>
         {{/each}}
       </div>
@@ -59,9 +68,18 @@
         <h3 class="grp-mental">{{localize "SCP2E.Group.Mental"}}</h3>
         {{#each mental}}
           <div class="attr-box">
-            <span class="attr-label">{{label}}</span>
-            <span class="attr-abbr">{{abbr}}</span>
-            <input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.value" value="{{value}}" min="0"/>
+            <div class="attr-head">
+              <button type="button" class="roll-btn" data-action="rollAttribute" data-attr="{{key}}" title="{{localize 'SCP2E.Roll.Attribute'}}"><i class="fa-solid fa-dice-d20"></i></button>
+              <span class="attr-label">{{label}}</span>
+              <span class="attr-abbr">{{abbr}}</span>
+              <input type="number" class="attr-rating" name="flags.scp2e-character-sheet.data.attributes.{{key}}.value" value="{{value}}" min="0" title="{{localize 'SCP2E.Roll.Rating'}}"/>
+            </div>
+            <div class="attr-pool">
+              <label>d6</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d6" value="{{dice.d6}}" min="0"/>
+              <label>d8</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d8" value="{{dice.d8}}" min="0"/>
+              <label>d10</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d10" value="{{dice.d10}}" min="0"/>
+              <label>d12</label><input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.dice.d12" value="{{dice.d12}}" min="0"/>
+            </div>
           </div>
         {{/each}}
       </div>
@@ -122,6 +140,7 @@
     <div class="skill-list">
       {{#each crucialSkills}}
         <div class="skill-row crucial">
+          <button type="button" class="roll-btn sm" data-action="rollSkill" data-skill="{{key}}" title="{{localize 'SCP2E.Roll.Skill'}}"><i class="fa-solid fa-dice-d20"></i></button>
           <span class="skill-name">{{label}}</span>
           <span class="skill-gov">{{gov}}</span>
           <input type="number" name="flags.scp2e-character-sheet.data.skills.{{key}}.value" value="{{value}}" min="0"/>
@@ -134,6 +153,7 @@
     <div class="skill-list two-col">
       {{#each standardSkills}}
         <div class="skill-row">
+          <button type="button" class="roll-btn sm" data-action="rollSkill" data-skill="{{key}}" title="{{localize 'SCP2E.Roll.Skill'}}"><i class="fa-solid fa-dice-d20"></i></button>
           <span class="skill-name">{{label}}</span>
           <span class="skill-gov">{{gov}}</span>
           <input type="number" name="flags.scp2e-character-sheet.data.skills.{{key}}.value" value="{{value}}" min="0"/>

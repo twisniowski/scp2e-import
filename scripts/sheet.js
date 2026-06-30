@@ -8,6 +8,7 @@
 import { ATTRIBUTES, SKILLS, DISRUPTION_CLASSES, DEPARTMENTS } from "./config.js";
 import { normalizeData, computeSkillCaps, EMPTY_ROWS } from "./data-model.js";
 import { promptPdfImport } from "./pdf-import.js";
+import { rollPool } from "./roll.js";
 import { MODULE_ID, FLAG_KEY } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -31,7 +32,9 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       deleteAspect: SCP2eCharacterSheet.#onDeleteRow,
       addCustomSkill: SCP2eCharacterSheet.#onAddRow,
       deleteCustomSkill: SCP2eCharacterSheet.#onDeleteRow,
-      adjustTrack: SCP2eCharacterSheet.#onAdjustTrack
+      adjustTrack: SCP2eCharacterSheet.#onAdjustTrack,
+      rollAttribute: SCP2eCharacterSheet.#onRollAttribute,
+      rollSkill: SCP2eCharacterSheet.#onRollSkill
     }
   };
 
@@ -62,7 +65,7 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     context.physical = [];
     context.mental = [];
     for (const [key, def] of Object.entries(ATTRIBUTES)) {
-      const entry = { key, abbr: def.abbr, label: game.i18n.localize(def.label), value: data.attributes[key]?.value ?? 0 };
+      const entry = { key, abbr: def.abbr, label: game.i18n.localize(def.label), value: data.attributes[key]?.value ?? 0, dice: data.attributes[key]?.dice ?? { d6: 0, d8: 0, d10: 0, d12: 0 } };
       (def.group === "physical" ? context.physical : context.mental).push(entry);
     }
 
@@ -151,6 +154,28 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     } catch (err) {
       console.error("SCP2e | delete-row failed:", err);
       ui.notifications.error("SCP2e: could not delete row (see console).");
+    }
+  }
+
+  /** Roll an attribute's dice pool (top two summed). */
+  static async #onRollAttribute(event, target) {
+    try {
+      await rollPool(this.actor, this.scpData, target.dataset.attr);
+    } catch (err) {
+      console.error("SCP2e | attribute roll failed:", err);
+      ui.notifications.error("SCP2e: roll failed (see console).");
+    }
+  }
+
+  /** Roll a skill: governing attribute pool (top two) + skill value. */
+  static async #onRollSkill(event, target) {
+    try {
+      const skillKey = target.dataset.skill;
+      const govKey = SKILLS[skillKey]?.gov;
+      await rollPool(this.actor, this.scpData, govKey, { skillKey });
+    } catch (err) {
+      console.error("SCP2e | skill roll failed:", err);
+      ui.notifications.error("SCP2e: roll failed (see console).");
     }
   }
 

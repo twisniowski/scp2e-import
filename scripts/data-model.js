@@ -11,7 +11,7 @@ import { ATTRIBUTES, SKILLS, DEPARTMENTS } from "./config.js";
 /** A fresh, fully-zeroed SCP data object. */
 export function getDefaultData() {
   const attributes = {};
-  for (const key of Object.keys(ATTRIBUTES)) attributes[key] = { value: 0 };
+  for (const key of Object.keys(ATTRIBUTES)) attributes[key] = { value: 0, dice: { d6: 0, d8: 0, d10: 0, d12: 0 } };
 
   const skills = {};
   for (const key of Object.keys(SKILLS)) skills[key] = { value: 0 };
