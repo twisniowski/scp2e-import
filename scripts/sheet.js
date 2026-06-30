@@ -76,6 +76,7 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       gov: ATTRIBUTES[def.gov].abbr,
       crucial: !!def.crucial,
       value: data.skills[key]?.value ?? 0,
+      mult: data.skills[key]?.mult ?? 1,
       cap: caps[key] ?? 0
     }));
     context.crucialSkills = context.skills.filter((s) => s.crucial);

@@ -71,12 +71,16 @@ export async function rollPool(actor, data, attrKey, { skillKey = null } = {}) {
 
   // Add skill value for a skill roll.
   let skillVal = 0;
+  let skillMult = 1;
+  let skillContribution = 0;
   let skillLabel = null;
   if (skillKey) {
     skillVal = Number(data.skills?.[skillKey]?.value ?? 0);
+    skillMult = Math.max(1, Number(data.skills?.[skillKey]?.mult ?? 1));
+    skillContribution = skillVal * skillMult;
     skillLabel = game.i18n.localize(SKILLS[skillKey].label);
   }
-  const total = keptSum + skillVal;
+  const total = keptSum + skillContribution;
 
   // Build the chat card.
   const attrLabel = game.i18n.localize(ATTRIBUTES[attrKey].label);
@@ -88,8 +92,9 @@ export async function rollPool(actor, data, attrKey, { skillKey = null } = {}) {
   }).join(" ");
 
   const flavor = skillLabel ? `${attrLabel} + ${skillLabel}` : attrLabel;
+  const skillTerm = skillMult > 1 ? `${skillVal}\u00d7${skillMult} = ${skillContribution}` : `${skillVal}`;
   const skillLine = skillLabel
-    ? `<div class="scp-roll-line">Top two ${keptSum} + ${skillLabel} ${skillVal}</div>`
+    ? `<div class="scp-roll-line">Top two ${keptSum} + ${skillLabel} ${skillTerm}</div>`
     : "";
 
   const content = `

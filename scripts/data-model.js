@@ -14,7 +14,7 @@ export function getDefaultData() {
   for (const key of Object.keys(ATTRIBUTES)) attributes[key] = { value: 0, dice: { d6: 0, d8: 0, d10: 0, d12: 0 } };
 
   const skills = {};
-  for (const key of Object.keys(SKILLS)) skills[key] = { value: 0 };
+  for (const key of Object.keys(SKILLS)) skills[key] = { value: 0, mult: 1 };
 
   const departments = {};
   for (const d of DEPARTMENTS) departments[d] = 0;
