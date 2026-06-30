@@ -66,18 +66,6 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     context.disruptionClasses = DISRUPTION_CLASSES;
     context.departments = DEPARTMENTS.map((d) => ({ key: d, value: sys.departments[d] ?? 0 }));
 
-    // Enriched rich-text fields.
-    const enrich = (html) =>
-      foundry.applications.ux.TextEditor.implementation.enrichHTML(html ?? "", {
-        secrets: this.actor.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor
-      });
-    context.enriched = {
-      smallItems: await enrich(sys.smallItems),
-      storage: await enrich(sys.storage),
-      aspectNotes: await enrich(sys.aspectNotes),
-      miscNotes: await enrich(sys.miscNotes)
-    };
-
     context.tabs = [
       { id: "main", label: "SCP2E.Tab.Main", icon: "fa-solid fa-id-card" },
       { id: "skills", label: "SCP2E.Tab.Skills", icon: "fa-solid fa-list-check" },
@@ -87,6 +75,20 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     ].map((t) => ({ ...t, active: t.id === this.tabGroups.primary }));
 
     return context;
+  }
+
+  /**
+   * Wrap document submission so any save error is logged with full context
+   * instead of surfacing as an opaque toast, and so a failed save doesn't
+   * leave the sheet looking broken.
+   */
+  async _processSubmitData(event, form, submitData, options) {
+    try {
+      return await super._processSubmitData(event, form, submitData, options);
+    } catch (err) {
+      console.error("SCP2e | save failed. Submitted data:", submitData, "\nError:", err);
+      ui.notifications.error("SCP2e: could not save the sheet (see console / F12).");
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -102,29 +104,49 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     this.render();
   }
 
+  /** Read a system array as a plain (deep-cloned) JS array. */
+  #plainArray(path) {
+    const key = path.replace(/^system\./, "");
+    const src = this.actor.system.toObject(); // plain object, safe to mutate
+    return Array.isArray(src[key]) ? src[key] : [];
+  }
+
   /** Generic add-row handler. `data-array` names the system array path. */
   static async #onAddRow(event, target) {
-    const path = target.dataset.array; // e.g. "system.weapons"
-    const current = foundry.utils.getProperty(this.actor, path) ?? [];
-    const next = current.concat([{}]);
-    await this.actor.update({ [path]: next });
+    try {
+      const path = target.dataset.array; // e.g. "system.weapons"
+      const next = this.#plainArray(path).concat([{}]);
+      await this.actor.update({ [path]: next });
+    } catch (err) {
+      console.error("SCP2e | add-row failed:", err);
+      ui.notifications.error("SCP2e: could not add row (see console).");
+    }
   }
 
   /** Generic delete-row handler. `data-index` is the array index to remove. */
   static async #onDeleteRow(event, target) {
-    const path = target.dataset.array;
-    const index = Number(target.dataset.index);
-    const current = foundry.utils.getProperty(this.actor, path) ?? [];
-    const next = current.filter((_, i) => i !== index);
-    await this.actor.update({ [path]: next });
+    try {
+      const path = target.dataset.array;
+      const index = Number(target.dataset.index);
+      const next = this.#plainArray(path).filter((_, i) => i !== index);
+      await this.actor.update({ [path]: next });
+    } catch (err) {
+      console.error("SCP2e | delete-row failed:", err);
+      ui.notifications.error("SCP2e: could not delete row (see console).");
+    }
   }
 
   /** Increment/decrement a pip track (exertion / reverence). */
   static async #onAdjustTrack(event, target) {
-    const track = target.dataset.track;
-    const delta = Number(target.dataset.delta);
-    const path = `system.tracks.${track}`;
-    const value = Math.max(0, (foundry.utils.getProperty(this.actor, path) ?? 0) + delta);
-    await this.actor.update({ [path]: value });
+    try {
+      const track = target.dataset.track;
+      const delta = Number(target.dataset.delta);
+      const path = `system.tracks.${track}`;
+      const value = Math.max(0, (foundry.utils.getProperty(this.actor, path) ?? 0) + delta);
+      await this.actor.update({ [path]: value });
+    } catch (err) {
+      console.error("SCP2e | track adjust failed:", err);
+      ui.notifications.error("SCP2e: could not update track (see console).");
+    }
   }
 }

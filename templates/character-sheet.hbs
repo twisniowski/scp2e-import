@@ -253,7 +253,7 @@
     </div>
 
     <h3>{{localize "SCP2E.Field.AspectNotes"}}</h3>
-    <div class="editor-host">{{editor enriched.aspectNotes target="system.aspectNotes" editable=editable button=true engine="prosemirror"}}</div>
+    <textarea class="notes-area" name="system.aspectNotes" rows="5">{{system.aspectNotes}}</textarea>
   </div>
   {{/if}}
 
@@ -261,11 +261,11 @@
   {{#if (eq activeTab "notes")}}
   <div class="scp2e-notes">
     <h3>{{localize "SCP2E.Field.SmallItems"}}</h3>
-    <div class="editor-host">{{editor enriched.smallItems target="system.smallItems" editable=editable button=true engine="prosemirror"}}</div>
+    <textarea class="notes-area" name="system.smallItems" rows="5">{{system.smallItems}}</textarea>
     <h3>{{localize "SCP2E.Field.Storage"}}</h3>
-    <div class="editor-host">{{editor enriched.storage target="system.storage" editable=editable button=true engine="prosemirror"}}</div>
+    <textarea class="notes-area" name="system.storage" rows="5">{{system.storage}}</textarea>
     <h3>{{localize "SCP2E.Field.MiscNotes"}}</h3>
-    <div class="editor-host">{{editor enriched.miscNotes target="system.miscNotes" editable=editable button=true engine="prosemirror"}}</div>
+    <textarea class="notes-area" name="system.miscNotes" rows="8">{{system.miscNotes}}</textarea>
   </div>
   {{/if}}
 

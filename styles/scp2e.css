@@ -39,8 +39,13 @@
   font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 6px;
   border-bottom: 2px solid #333; padding-bottom: 2px; display: flex; align-items: center; gap: 8px;
 }
-.tab-body input, .tab-body select { background: #fff; border: 1px solid #aaa; border-radius: 3px; padding: 2px 4px; }
+.tab-body input, .tab-body select, .tab-body textarea {
+  background: #fff; border: 1px solid #aaa; border-radius: 3px; padding: 2px 4px;
+  color: #111; text-align: center;
+}
+.tab-body input::placeholder { color: #999; }
 .tab-body input[type="number"] { width: 48px; text-align: center; }
+.notes-area { width: 100%; text-align: left; resize: vertical; font-family: inherit; }
 
 /* Attributes */
 .attr-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -108,6 +113,4 @@ table.weapons td:first-child { min-width: 90px; }
 .dept label { font-size: 10px; font-weight: 700; }
 .dept input { width: 44px; }
 
-.editor-host { background: #fff; border: 1px solid #999; border-radius: 4px; min-height: 100px; }
-.scp2e-notes .editor-host { min-height: 140px; }
-.editor-host .editor { min-height: 100px; }
+.

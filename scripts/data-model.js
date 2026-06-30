@@ -60,8 +60,7 @@ function aspectField() {
     name: new fields.StringField({ blank: true }),
     cost: new fields.StringField({ blank: true }),
     page: new fields.StringField({ blank: true }),
-    type: new fields.StringField({ blank: true, initial: "power",
-      choices: ["power", "talent", "history"] })
+    type: new fields.StringField({ blank: true, initial: "power" })
   }));
 }
 
@@ -121,10 +120,10 @@ export class SCP2eCharacterData extends foundry.abstract.TypeDataModel {
         bStyle: new fields.StringField({ blank: true }),
         bSus:   new fields.StringField({ blank: true })
       }),
-      smallItems: new fields.HTMLField({ blank: true }),
-      storage:    new fields.HTMLField({ blank: true }),
-      aspectNotes:new fields.HTMLField({ blank: true }),
-      miscNotes:  new fields.HTMLField({ blank: true }),
+      smallItems: new fields.StringField({ blank: true }),
+      storage:    new fields.StringField({ blank: true }),
+      aspectNotes:new fields.StringField({ blank: true }),
+      miscNotes:  new fields.StringField({ blank: true }),
       departments: new fields.SchemaField(departments)
     };
   }
