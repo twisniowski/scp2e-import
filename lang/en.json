@@ -113,5 +113,6 @@
   "SCP2E.Roll.Skill": "Roll skill (governing attribute + skill)",
   "SCP2E.Roll.Rating": "Attribute Rating (for automatic successes)",
   "SCP2E.Roll.NoDice": "No dice in the {attr} pool — set d6/d8/d10/d12 counts first.",
-  "SCP2E.Skills.Mult": "Skill multiplier (×1, ×2, or ×3 — multiplies the skill before adding)"
+  "SCP2E.Skills.Mult": "Skill multiplier (×1, ×2, or ×3 — multiplies the skill before adding)",
+  "SCP2E.Portrait": "Change portrait"
 }

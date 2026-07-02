@@ -2,7 +2,9 @@
 
   {{!-- Header: identity + PDF import --}}
   <header class="scp2e-header">
-    <div class="scp2e-logo"><span class="scp2e-mark">SCP</span></div>
+    <div class="scp2e-logo">
+      <img class="scp2e-portrait" src="{{actor.img}}" data-action="editImage" title="{{localize 'SCP2E.Portrait'}}" alt="portrait"/>
+    </div>
     <div class="scp2e-identity">
       <div class="id-row">
         <label>{{localize "SCP2E.Field.Character"}}</label>

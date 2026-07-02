@@ -1,0 +1,817 @@
+{
+"Check Box 80": {
+"attr": "strength",
+"col": 3,
+"bottom": false
+},
+"Check Box 81": {
+"attr": "strength",
+"col": 3,
+"bottom": true
+},
+"Check Box 83": {
+"attr": "strength",
+"col": 3,
+"bottom": false
+},
+"Check Box 84": {
+"attr": "strength",
+"col": 1,
+"bottom": false
+},
+"Check Box 85": {
+"attr": "strength",
+"col": 1,
+"bottom": false
+},
+"Check Box 86": {
+"attr": "strength",
+"col": 0,
+"bottom": false
+},
+"Check Box 87": {
+"attr": "strength",
+"col": 0,
+"bottom": false
+},
+"Check Box 76": {
+"attr": "strength",
+"col": 2,
+"bottom": false
+},
+"Check Box 77": {
+"attr": "strength",
+"col": 2,
+"bottom": true
+},
+"Check Box 79": {
+"attr": "strength",
+"col": 2,
+"bottom": false
+},
+"Check Box 40": {
+"attr": "strength",
+"col": 0,
+"bottom": false
+},
+"Check Box 158": {
+"attr": "strength",
+"col": 1,
+"bottom": false
+},
+"Check Box 159": {
+"attr": "strength",
+"col": 2,
+"bottom": false
+},
+"Check Box 160": {
+"attr": "strength",
+"col": 3,
+"bottom": false
+},
+"Check Box 351": {
+"attr": "strength",
+"col": 2,
+"bottom": false
+},
+"Check Box 352": {
+"attr": "strength",
+"col": 0,
+"bottom": false
+},
+"Check Box 353": {
+"attr": "strength",
+"col": 3,
+"bottom": false
+},
+"Check Box 354": {
+"attr": "strength",
+"col": 1,
+"bottom": false
+},
+"Check Box 355": {
+"attr": "strength",
+"col": 2,
+"bottom": false
+},
+"Check Box 356": {
+"attr": "strength",
+"col": 3,
+"bottom": false
+},
+"Check Box 357": {
+"attr": "strength",
+"col": 3,
+"bottom": false
+},
+"Check Box 88": {
+"attr": "perception",
+"col": 2,
+"bottom": false
+},
+"Check Box 89": {
+"attr": "perception",
+"col": 1,
+"bottom": false
+},
+"Check Box 90": {
+"attr": "perception",
+"col": 0,
+"bottom": false
+},
+"Check Box 91": {
+"attr": "perception",
+"col": 3,
+"bottom": false
+},
+"Check Box 92": {
+"attr": "perception",
+"col": 2,
+"bottom": true
+},
+"Check Box 93": {
+"attr": "perception",
+"col": 3,
+"bottom": true
+},
+"Check Box 94": {
+"attr": "perception",
+"col": 2,
+"bottom": false
+},
+"Check Box 95": {
+"attr": "perception",
+"col": 1,
+"bottom": false
+},
+"Check Box 96": {
+"attr": "perception",
+"col": 0,
+"bottom": false
+},
+"Check Box 97": {
+"attr": "perception",
+"col": 3,
+"bottom": false
+},
+"Check Box 161": {
+"attr": "perception",
+"col": 0,
+"bottom": false
+},
+"Check Box 162": {
+"attr": "perception",
+"col": 1,
+"bottom": false
+},
+"Check Box 163": {
+"attr": "perception",
+"col": 2,
+"bottom": false
+},
+"Check Box 164": {
+"attr": "perception",
+"col": 3,
+"bottom": false
+},
+"Check Box 371": {
+"attr": "perception",
+"col": 2,
+"bottom": false
+},
+"Check Box 372": {
+"attr": "perception",
+"col": 3,
+"bottom": false
+},
+"Check Box 373": {
+"attr": "perception",
+"col": 2,
+"bottom": false
+},
+"Check Box 374": {
+"attr": "perception",
+"col": 0,
+"bottom": false
+},
+"Check Box 375": {
+"attr": "perception",
+"col": 3,
+"bottom": false
+},
+"Check Box 376": {
+"attr": "perception",
+"col": 1,
+"bottom": false
+},
+"Check Box 377": {
+"attr": "perception",
+"col": 3,
+"bottom": false
+},
+"Check Box 118": {
+"attr": "intellect",
+"col": 2,
+"bottom": false
+},
+"Check Box 122": {
+"attr": "intellect",
+"col": 1,
+"bottom": false
+},
+"Check Box 124": {
+"attr": "intellect",
+"col": 0,
+"bottom": false
+},
+"Check Box 126": {
+"attr": "intellect",
+"col": 3,
+"bottom": false
+},
+"Check Box 128": {
+"attr": "intellect",
+"col": 2,
+"bottom": true
+},
+"Check Box 130": {
+"attr": "intellect",
+"col": 3,
+"bottom": true
+},
+"Check Box 132": {
+"attr": "intellect",
+"col": 2,
+"bottom": false
+},
+"Check Box 136": {
+"attr": "intellect",
+"col": 1,
+"bottom": false
+},
+"Check Box 140": {
+"attr": "intellect",
+"col": 0,
+"bottom": false
+},
+"Check Box 144": {
+"attr": "intellect",
+"col": 3,
+"bottom": false
+},
+"Check Box 173": {
+"attr": "intellect",
+"col": 0,
+"bottom": false
+},
+"Check Box 177": {
+"attr": "intellect",
+"col": 1,
+"bottom": false
+},
+"Check Box 181": {
+"attr": "intellect",
+"col": 2,
+"bottom": false
+},
+"Check Box 185": {
+"attr": "intellect",
+"col": 3,
+"bottom": false
+},
+"Check Box 378": {
+"attr": "intellect",
+"col": 2,
+"bottom": false
+},
+"Check Box 379": {
+"attr": "intellect",
+"col": 0,
+"bottom": false
+},
+"Check Box 380": {
+"attr": "intellect",
+"col": 3,
+"bottom": false
+},
+"Check Box 304": {
+"attr": "intellect",
+"col": 1,
+"bottom": false
+},
+"Check Box 381": {
+"attr": "intellect",
+"col": 2,
+"bottom": false
+},
+"Check Box 382": {
+"attr": "intellect",
+"col": 3,
+"bottom": false
+},
+"Check Box 120": {
+"attr": "charisma",
+"col": 2,
+"bottom": false
+},
+"Check Box 123": {
+"attr": "charisma",
+"col": 1,
+"bottom": false
+},
+"Check Box 125": {
+"attr": "charisma",
+"col": 0,
+"bottom": false
+},
+"Check Box 127": {
+"attr": "charisma",
+"col": 3,
+"bottom": false
+},
+"Check Box 129": {
+"attr": "charisma",
+"col": 2,
+"bottom": true
+},
+"Check Box 131": {
+"attr": "charisma",
+"col": 3,
+"bottom": true
+},
+"Check Box 134": {
+"attr": "charisma",
+"col": 2,
+"bottom": false
+},
+"Check Box 138": {
+"attr": "charisma",
+"col": 1,
+"bottom": false
+},
+"Check Box 142": {
+"attr": "charisma",
+"col": 0,
+"bottom": false
+},
+"Check Box 146": {
+"attr": "charisma",
+"col": 3,
+"bottom": false
+},
+"Check Box 175": {
+"attr": "charisma",
+"col": 0,
+"bottom": false
+},
+"Check Box 179": {
+"attr": "charisma",
+"col": 1,
+"bottom": false
+},
+"Check Box 183": {
+"attr": "charisma",
+"col": 2,
+"bottom": false
+},
+"Check Box 187": {
+"attr": "charisma",
+"col": 3,
+"bottom": false
+},
+"Check Box 386": {
+"attr": "charisma",
+"col": 2,
+"bottom": false
+},
+"Check Box 387": {
+"attr": "charisma",
+"col": 3,
+"bottom": false
+},
+"Check Box 308": {
+"attr": "charisma",
+"col": 1,
+"bottom": false
+},
+"Check Box 98": {
+"attr": "dexterity",
+"col": 2,
+"bottom": false
+},
+"Check Box 100": {
+"attr": "dexterity",
+"col": 1,
+"bottom": false
+},
+"Check Box 102": {
+"attr": "dexterity",
+"col": 0,
+"bottom": false
+},
+"Check Box 104": {
+"attr": "dexterity",
+"col": 3,
+"bottom": false
+},
+"Check Box 106": {
+"attr": "dexterity",
+"col": 2,
+"bottom": true
+},
+"Check Box 108": {
+"attr": "dexterity",
+"col": 3,
+"bottom": true
+},
+"Check Box 110": {
+"attr": "dexterity",
+"col": 2,
+"bottom": false
+},
+"Check Box 112": {
+"attr": "dexterity",
+"col": 1,
+"bottom": false
+},
+"Check Box 114": {
+"attr": "dexterity",
+"col": 0,
+"bottom": false
+},
+"Check Box 116": {
+"attr": "dexterity",
+"col": 3,
+"bottom": false
+},
+"Check Box 165": {
+"attr": "dexterity",
+"col": 0,
+"bottom": false
+},
+"Check Box 167": {
+"attr": "dexterity",
+"col": 1,
+"bottom": false
+},
+"Check Box 169": {
+"attr": "dexterity",
+"col": 2,
+"bottom": false
+},
+"Check Box 171": {
+"attr": "dexterity",
+"col": 3,
+"bottom": false
+},
+"Check Box 358": {
+"attr": "dexterity",
+"col": 2,
+"bottom": false
+},
+"Check Box 359": {
+"attr": "dexterity",
+"col": 0,
+"bottom": false
+},
+"Check Box 360": {
+"attr": "dexterity",
+"col": 3,
+"bottom": false
+},
+"Check Box 361": {
+"attr": "dexterity",
+"col": 1,
+"bottom": false
+},
+"Check Box 362": {
+"attr": "dexterity",
+"col": 2,
+"bottom": false
+},
+"Check Box 363": {
+"attr": "dexterity",
+"col": 1,
+"bottom": false
+},
+"Check Box 364": {
+"attr": "dexterity",
+"col": 3,
+"bottom": false
+},
+"Check Box 365": {
+"attr": "dexterity",
+"col": 3,
+"bottom": false
+},
+"Check Box 99": {
+"attr": "health",
+"col": 2,
+"bottom": false
+},
+"Check Box 101": {
+"attr": "health",
+"col": 1,
+"bottom": false
+},
+"Check Box 103": {
+"attr": "health",
+"col": 0,
+"bottom": false
+},
+"Check Box 105": {
+"attr": "health",
+"col": 3,
+"bottom": false
+},
+"Check Box 107": {
+"attr": "health",
+"col": 2,
+"bottom": true
+},
+"Check Box 109": {
+"attr": "health",
+"col": 3,
+"bottom": true
+},
+"Check Box 111": {
+"attr": "health",
+"col": 2,
+"bottom": false
+},
+"Check Box 113": {
+"attr": "health",
+"col": 1,
+"bottom": false
+},
+"Check Box 115": {
+"attr": "health",
+"col": 0,
+"bottom": false
+},
+"Check Box 117": {
+"attr": "health",
+"col": 3,
+"bottom": false
+},
+"Check Box 166": {
+"attr": "health",
+"col": 0,
+"bottom": false
+},
+"Check Box 168": {
+"attr": "health",
+"col": 1,
+"bottom": false
+},
+"Check Box 170": {
+"attr": "health",
+"col": 2,
+"bottom": false
+},
+"Check Box 172": {
+"attr": "health",
+"col": 3,
+"bottom": false
+},
+"Check Box 366": {
+"attr": "health",
+"col": 2,
+"bottom": false
+},
+"Check Box 367": {
+"attr": "health",
+"col": 0,
+"bottom": false
+},
+"Check Box 368": {
+"attr": "health",
+"col": 3,
+"bottom": false
+},
+"Check Box 369": {
+"attr": "health",
+"col": 1,
+"bottom": false
+},
+"Check Box 370": {
+"attr": "health",
+"col": 3,
+"bottom": false
+},
+"Check Box 119": {
+"attr": "willpower",
+"col": 2,
+"bottom": false
+},
+"Check Box 1010": {
+"attr": "willpower",
+"col": 1,
+"bottom": false
+},
+"Check Box 1012": {
+"attr": "willpower",
+"col": 0,
+"bottom": false
+},
+"Check Box 1014": {
+"attr": "willpower",
+"col": 3,
+"bottom": false
+},
+"Check Box 1016": {
+"attr": "willpower",
+"col": 2,
+"bottom": true
+},
+"Check Box 1018": {
+"attr": "willpower",
+"col": 3,
+"bottom": true
+},
+"Check Box 133": {
+"attr": "willpower",
+"col": 2,
+"bottom": false
+},
+"Check Box 137": {
+"attr": "willpower",
+"col": 1,
+"bottom": false
+},
+"Check Box 141": {
+"attr": "willpower",
+"col": 0,
+"bottom": false
+},
+"Check Box 145": {
+"attr": "willpower",
+"col": 3,
+"bottom": false
+},
+"Check Box 174": {
+"attr": "willpower",
+"col": 0,
+"bottom": false
+},
+"Check Box 178": {
+"attr": "willpower",
+"col": 1,
+"bottom": false
+},
+"Check Box 182": {
+"attr": "willpower",
+"col": 2,
+"bottom": false
+},
+"Check Box 186": {
+"attr": "willpower",
+"col": 3,
+"bottom": false
+},
+"Check Box 383": {
+"attr": "willpower",
+"col": 2,
+"bottom": false
+},
+"Check Box 384": {
+"attr": "willpower",
+"col": 0,
+"bottom": false
+},
+"Check Box 305": {
+"attr": "willpower",
+"col": 3,
+"bottom": false
+},
+"Check Box 306": {
+"attr": "willpower",
+"col": 1,
+"bottom": false
+},
+"Check Box 385": {
+"attr": "willpower",
+"col": 2,
+"bottom": false
+},
+"Check Box 307": {
+"attr": "willpower",
+"col": 3,
+"bottom": false
+},
+"Check Box 121": {
+"attr": "fate",
+"col": 2,
+"bottom": false
+},
+"Check Box 1011": {
+"attr": "fate",
+"col": 1,
+"bottom": false
+},
+"Check Box 1013": {
+"attr": "fate",
+"col": 0,
+"bottom": false
+},
+"Check Box 1015": {
+"attr": "fate",
+"col": 3,
+"bottom": false
+},
+"Check Box 1017": {
+"attr": "fate",
+"col": 2,
+"bottom": true
+},
+"Check Box 1019": {
+"attr": "fate",
+"col": 3,
+"bottom": true
+},
+"Check Box 135": {
+"attr": "fate",
+"col": 2,
+"bottom": false
+},
+"Check Box 139": {
+"attr": "fate",
+"col": 1,
+"bottom": false
+},
+"Check Box 143": {
+"attr": "fate",
+"col": 0,
+"bottom": false
+},
+"Check Box 147": {
+"attr": "fate",
+"col": 3,
+"bottom": false
+},
+"Check Box 176": {
+"attr": "fate",
+"col": 0,
+"bottom": false
+},
+"Check Box 180": {
+"attr": "fate",
+"col": 1,
+"bottom": false
+},
+"Check Box 184": {
+"attr": "fate",
+"col": 2,
+"bottom": false
+},
+"Check Box 188": {
+"attr": "fate",
+"col": 3,
+"bottom": false
+},
+"Check Box 388": {
+"attr": "fate",
+"col": 2,
+"bottom": false
+},
+"Check Box 309": {
+"attr": "fate",
+"col": 3,
+"bottom": false
+},
+"Check Box 3010": {
+"attr": "fate",
+"col": 1,
+"bottom": false
+},
+"Check Box 416": {
+"attr": "fate",
+"col": 2,
+"bottom": false
+},
+"Check Box 3011": {
+"attr": "fate",
+"col": 3,
+"bottom": false
+},
+"Check Box 3012": {
+"attr": "fate",
+"col": 1,
+"bottom": false
+},
+"Check Box 417": {
+"attr": "fate",
+"col": 2,
+"bottom": false
+},
+"Check Box 3013": {
+"attr": "fate",
+"col": 3,
+"bottom": false
+},
+"Check Box 3014": {
+"attr": "fate",
+"col": 1,
+"bottom": false
+}
+}

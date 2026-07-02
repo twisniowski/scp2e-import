@@ -2,9 +2,9 @@
  * PDF import for SCP 2e character sheets.
  *
  * Reads the AcroForm fields of a filled-in official SCP2e fillable PDF and writes
- * them into the actor's SCP flag (flags.scp2e-character-sheet.data). Field names
- * in the source PDF are generic ("Text Field 12"), so the mapping is derived from
- * field geometry (see scripts/field-map.json).
+ * them into the actor's SCP flag (flags.scp2e-character-sheet.data). Text fields
+ * are mapped by geometry (scripts/field-map.json); the attribute dice pools are
+ * decoded from the upgrade checkboxes (scripts/dice-map.json).
  */
 import { MODULE_ID, FLAG_KEY } from "./const.js";
 import { normalizeData } from "./data-model.js";
@@ -18,10 +18,9 @@ async function loadPdfLib() {
   return _PDFLib;
 }
 
-/** Load the field map (PDF field name -> { target, type, array, group, order }). */
-async function loadFieldMap() {
-  const res = await fetch(`/modules/${MODULE_ID}/scripts/field-map.json`);
-  if (!res.ok) throw new Error("SCP2e: could not load field-map.json");
+async function loadJson(path) {
+  const res = await fetch(`/modules/${MODULE_ID}/${path}`);
+  if (!res.ok) throw new Error(`SCP2e: could not load ${path}`);
   return res.json();
 }
 
@@ -53,10 +52,44 @@ function coerce(value, type) {
 }
 
 /**
+ * Decode attribute dice pools from the upgrade checkboxes.
+ *
+ * Each attribute has 4 columns. The leftmost two are always dice; columns 3-4 are
+ * dice only if their bottom "add-die" box is checked. Every die starts at d6 and
+ * each checked upgrade box raises it one tier (d6 -> d8 -> d10 -> d12).
+ */
+function decodeDice(rawFields, diceMap) {
+  const TIERS = ["d6", "d8", "d10", "d12"];
+  const byAttr = {};
+  for (const [name, info] of Object.entries(diceMap)) {
+    (byAttr[info.attr] ??= {});
+    (byAttr[info.attr][info.col] ??= []).push({ bottom: info.bottom, checked: rawFields[name] === "1" });
+  }
+  const out = {};
+  for (const [attr, cols] of Object.entries(byAttr)) {
+    const pool = { d6: 0, d8: 0, d10: 0, d12: 0 };
+    for (let col = 0; col < 4; col++) {
+      const boxes = cols[col] ?? [];
+      let exists, ups;
+      if (col <= 1) {                                   // base dice: always present
+        exists = true;
+        ups = boxes.filter((b) => b.checked).length;
+      } else {                                          // extension dice: only if added
+        exists = boxes.some((b) => b.bottom && b.checked);
+        ups = boxes.filter((b) => b.checked && !b.bottom).length;
+      }
+      if (exists) pool[TIERS[Math.min(3, ups)]]++;
+    }
+    out[attr] = pool;
+  }
+  return out;
+}
+
+/**
  * Build sparse SCP flag data (and actor name) from raw PDF fields.
  * @returns {{name: string|null, data: object}}
  */
-function buildData(rawFields, fieldMap) {
+function buildData(rawFields, fieldMap, diceMap) {
   const data = {};            // sparse: only fields actually present in the PDF
   const weaponRows = {};
   const groups = {};          // groupName -> [{ order, value }]
@@ -65,18 +98,15 @@ function buildData(rawFields, fieldMap) {
   for (const [pdfName, raw] of Object.entries(rawFields)) {
     const map = fieldMap[pdfName];
     if (!map) continue;
-    // Only import fields actually filled in the PDF, so blanks don't overwrite
-    // sensible defaults (e.g. an empty multiplier staying at x1).
-    if (raw === "" || raw == null) continue;
+    if (raw === "" || raw == null) continue;    // don't overwrite defaults with blanks
     const value = coerce(raw, map.type);
 
     if (map.array === "weapons") {
-      const [, , row, col] = map.target.split("."); // system.weapons.<row>.<col>
+      const [, , row, col] = map.target.split(".");
       (weaponRows[row] ??= {})[col] = value;
       continue;
     }
     if (map.group) {
-      // Multiple PDF fields collected into one text area (everyday carry, etc.).
       (groups[map.group] ??= []).push({ order: map.order ?? 0, value });
       continue;
     }
@@ -84,18 +114,12 @@ function buildData(rawFields, fieldMap) {
       if (value) name = value;
       continue;
     }
-    // map.target looks like "system.identity.player" -> strip the "system." prefix.
-    const path = map.target.replace(/^system\./, "");
-    foundry.utils.setProperty(data, path, value);
+    foundry.utils.setProperty(data, map.target.replace(/^system\./, ""), value);
   }
 
-  // Collapse grouped fields into newline-joined text, in reading order.
   for (const [group, items] of Object.entries(groups)) {
-    const text = items
-      .sort((a, b) => a.order - b.order)
-      .map((i) => String(i.value).trim())
-      .filter(Boolean)
-      .join("\n");
+    const text = items.sort((a, b) => a.order - b.order)
+      .map((i) => String(i.value).trim()).filter(Boolean).join("\n");
     if (text) foundry.utils.setProperty(data, group, text);
   }
 
@@ -105,6 +129,13 @@ function buildData(rawFields, fieldMap) {
     .filter((w) => Object.values(w).some((v) => v !== "" && v != null));
   if (weapons.length) data.weapons = weapons;
 
+  // Attribute dice pools (from checkboxes).
+  if (diceMap) {
+    for (const [attr, pool] of Object.entries(decodeDice(rawFields, diceMap))) {
+      foundry.utils.setProperty(data, `attributes.${attr}.dice`, pool);
+    }
+  }
+
   return { name, data };
 }
 
@@ -113,12 +144,14 @@ function buildData(rawFields, fieldMap) {
  */
 export async function importPdfToActor(file, actor) {
   const buffer = await file.arrayBuffer();
-  const fieldMap = await loadFieldMap();
+  const [fieldMap, diceMap] = await Promise.all([
+    loadJson("scripts/field-map.json"),
+    loadJson("scripts/dice-map.json")
+  ]);
   const raw = await readPdfFields(buffer);
-  const { name, data } = buildData(raw, fieldMap);
+  const { name, data } = buildData(raw, fieldMap, diceMap);
 
-  // Merge imported fields over the actor's existing data (filled in defaults),
-  // so manual entries the PDF doesn't cover (e.g. dice pools) are preserved.
+  // Merge imported fields over the actor's existing data (filled in defaults).
   const existing = normalizeData(actor.getFlag(MODULE_ID, FLAG_KEY));
   const merged = foundry.utils.mergeObject(existing, data, { inplace: false });
   await actor.setFlag(MODULE_ID, FLAG_KEY, merged);
@@ -155,7 +188,6 @@ export async function promptPdfImport(actor = null) {
       ui.notifications.info(game.i18n.format("SCP2E.Import.Success", {
         name: result.name ?? target.name, count: result.fieldCount
       }));
-      // Force the SCP sheet for this actor and open it.
       await target.setFlag("core", "sheetClass", "scp2e-character-sheet.SCP2eCharacterSheet");
       target.sheet?.render(true);
     } catch (err) {

@@ -25,6 +25,7 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
       importPdf: SCP2eCharacterSheet.#onImportPdf,
+      editImage: SCP2eCharacterSheet.#onEditImage,
       changeTab: SCP2eCharacterSheet.#onChangeTab,
       addWeapon: SCP2eCharacterSheet.#onAddRow,
       deleteWeapon: SCP2eCharacterSheet.#onDeleteRow,
@@ -125,6 +126,17 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
 
   static #onImportPdf() {
     promptPdfImport(this.actor);
+  }
+
+  /** Open a FilePicker to set the actor's portrait image. */
+  static #onEditImage() {
+    const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+    const fp = new FP({
+      type: "image",
+      current: this.actor.img,
+      callback: (path) => this.actor.update({ img: path })
+    });
+    return fp.render(true);
   }
 
   static #onChangeTab(event, target) {
