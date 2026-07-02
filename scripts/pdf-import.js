@@ -52,33 +52,33 @@ function coerce(value, type) {
 }
 
 /**
- * Decode attribute dice pools from the upgrade checkboxes.
+ * Decode attribute dice pools from the die checkboxes.
  *
- * Each attribute has 4 columns. The leftmost two are always dice; columns 3-4 are
- * dice only if their bottom "add-die" box is checked. Every die starts at d6 and
- * each checked upgrade box raises it one tier (d6 -> d8 -> d10 -> d12).
+ * The dice-map contains only the large "die" checkboxes (the small connector boxes
+ * are upgrade-cost tolls and are ignored). Each attribute has 4 columns; the
+ * leftmost two are always dice, columns 3-4 only exist if one of their die boxes
+ * is checked. A die's tier is the highest checked die box in its column
+ * (d6 -> d8 -> d10 -> d12), or d6 for a base column with none checked.
  */
 function decodeDice(rawFields, diceMap) {
   const TIERS = ["d6", "d8", "d10", "d12"];
   const byAttr = {};
   for (const [name, info] of Object.entries(diceMap)) {
     (byAttr[info.attr] ??= {});
-    (byAttr[info.attr][info.col] ??= []).push({ bottom: info.bottom, checked: rawFields[name] === "1" });
+    (byAttr[info.attr][info.col] ??= []).push({ tier: info.tier, checked: rawFields[name] === "1" });
   }
   const out = {};
   for (const [attr, cols] of Object.entries(byAttr)) {
     const pool = { d6: 0, d8: 0, d10: 0, d12: 0 };
     for (let col = 0; col < 4; col++) {
-      const boxes = cols[col] ?? [];
-      let exists, ups;
-      if (col <= 1) {                                   // base dice: always present
-        exists = true;
-        ups = boxes.filter((b) => b.checked).length;
-      } else {                                          // extension dice: only if added
-        exists = boxes.some((b) => b.bottom && b.checked);
-        ups = boxes.filter((b) => b.checked && !b.bottom).length;
+      const checkedTiers = (cols[col] ?? []).filter((b) => b.checked).map((b) => b.tier);
+      if (col <= 1) {
+        // Base dice: always present; tier is the highest checked die box (d6 if none).
+        pool[TIERS[checkedTiers.length ? Math.max(...checkedTiers) : 0]]++;
+      } else if (checkedTiers.length) {
+        // Expansion dice: only exist if a die box is checked.
+        pool[TIERS[Math.max(...checkedTiers)]]++;
       }
-      if (exists) pool[TIERS[Math.min(3, ups)]]++;
     }
     out[attr] = pool;
   }
