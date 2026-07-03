@@ -790,5 +790,109 @@
   "type": "string",
   "group": "storage",
   "order": 5
+ },
+ "Text Field 101069": {
+  "target": "system.uniforms.aSlots.s1.weapon",
+  "type": "string"
+ },
+ "Text Field 101071": {
+  "target": "system.uniforms.aSlots.s1.draw",
+  "type": "string"
+ },
+ "Text Field 101070": {
+  "target": "system.uniforms.aSlots.s1.mass",
+  "type": "string"
+ },
+ "Text Field 101072": {
+  "target": "system.uniforms.aSlots.s1.size",
+  "type": "string"
+ },
+ "Text Field 101073": {
+  "target": "system.uniforms.aSlots.s2.weapon",
+  "type": "string"
+ },
+ "Text Field 101075": {
+  "target": "system.uniforms.aSlots.s2.draw",
+  "type": "string"
+ },
+ "Text Field 101074": {
+  "target": "system.uniforms.aSlots.s2.mass",
+  "type": "string"
+ },
+ "Text Field 101076": {
+  "target": "system.uniforms.aSlots.s2.size",
+  "type": "string"
+ },
+ "Text Field 101077": {
+  "target": "system.uniforms.aSlots.s3.weapon",
+  "type": "string"
+ },
+ "Text Field 101079": {
+  "target": "system.uniforms.aSlots.s3.draw",
+  "type": "string"
+ },
+ "Text Field 101078": {
+  "target": "system.uniforms.aSlots.s3.mass",
+  "type": "string"
+ },
+ "Text Field 101080": {
+  "target": "system.uniforms.aSlots.s3.size",
+  "type": "string"
+ },
+ "Text Field 101081": {
+  "target": "system.uniforms.bSlots.s1.weapon",
+  "type": "string"
+ },
+ "Text Field 101087": {
+  "target": "system.uniforms.bSlots.s1.draw",
+  "type": "string"
+ },
+ "Text Field 101084": {
+  "target": "system.uniforms.bSlots.s1.mass",
+  "type": "string"
+ },
+ "Text Field 101090": {
+  "target": "system.uniforms.bSlots.s1.size",
+  "type": "string"
+ },
+ "Text Field 101082": {
+  "target": "system.uniforms.bSlots.s2.weapon",
+  "type": "string"
+ },
+ "Text Field 101088": {
+  "target": "system.uniforms.bSlots.s2.draw",
+  "type": "string"
+ },
+ "Text Field 101085": {
+  "target": "system.uniforms.bSlots.s2.mass",
+  "type": "string"
+ },
+ "Text Field 101091": {
+  "target": "system.uniforms.bSlots.s2.size",
+  "type": "string"
+ },
+ "Text Field 101083": {
+  "target": "system.uniforms.bSlots.s3.weapon",
+  "type": "string"
+ },
+ "Text Field 101089": {
+  "target": "system.uniforms.bSlots.s3.draw",
+  "type": "string"
+ },
+ "Text Field 101086": {
+  "target": "system.uniforms.bSlots.s3.mass",
+  "type": "string"
+ },
+ "Text Field 101092": {
+  "target": "system.uniforms.bSlots.s3.size",
+  "type": "string"
+ },
+ "Text Field 1010112": {
+  "target": "system.uniforms.bStyle",
+  "type": "string"
+ },
+ "Text Field 1010113": {
+  "target": "system.uniforms.bSus",
+  "type": "string"
  }
 }

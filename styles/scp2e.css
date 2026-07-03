@@ -106,13 +106,17 @@
 /* Skills */
 .skill-list { display: grid; gap: 3px; }
 .skill-list.two-col { grid-template-columns: 1fr 1fr; gap: 3px 16px; }
-.skill-row { display: grid; grid-template-columns: auto 1fr auto 44px 34px auto; align-items: center; gap: 6px; background: #fff; border: 1px solid #bbb; border-radius: 3px; padding: 3px 8px; }
-.skill-mult { width: 32px; }
+.skill-row { display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 8px; background: #fff; border: 1px solid #bbb; border-radius: 3px; padding: 3px 8px; }
+.skill-value-wrap { display: flex; align-items: center; gap: 3px; }
+.skill-value { width: 38px; }
+.skill-mult-wrap { display: flex; align-items: center; gap: 1px; }
+.mult-x { font-size: 11px; color: #888; font-weight: 700; }
+.skill-mult { width: 30px; }
 .skill-mult[value="1"] { opacity: .55; }
 .skill-row.crucial { border-left: 3px solid #b22; }
 .skill-name { font-size: 12px; font-weight: 600; }
 .skill-gov { font-size: 9px; color: #888; font-weight: 700; }
-.skill-cap { font-size: 11px; color: #555; }
+.skill-cap { font-size: 11px; color: #888; min-width: 16px; }
 .skill-row.custom { grid-template-columns: 1fr 60px 48px auto; }
 .skill-row.custom .custom-name { width: 100%; }
 
@@ -132,10 +136,17 @@ table.weapons td, table.aspects td { border: 1px solid #ccc; padding: 1px; }
 table.weapons input, table.aspects input, table.aspects select { width: 100%; border: none; background: transparent; }
 table.weapons td:first-child { min-width: 90px; }
 
-.uniforms { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin-top: 12px; }
-.uniforms > div { display: flex; align-items: center; gap: 6px; }
-.uniforms label { font-size: 10px; text-transform: uppercase; font-weight: 700; min-width: 90px; }
-.uniforms input { flex: 1; }
+/* Uniforms + weapon slots */
+.uniform-block { margin-top: 10px; }
+.uniform-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.uniform-head label { font-size: 10px; text-transform: uppercase; font-weight: 700; }
+.uniform-head input { flex: 1; min-width: 90px; }
+table.wslots { width: 100%; border-collapse: collapse; font-size: 11px; }
+table.wslots th { background: #2b2b2b; color: #fff; font-size: 9px; text-transform: uppercase; padding: 2px 4px; }
+table.wslots td { border: 1px solid #ccc; padding: 1px; }
+table.wslots input { width: 100%; border: none; background: transparent; }
+.wslots .slot-n { width: 18px; text-align: center; font-weight: 700; background: #eee; }
+.wslots td:nth-child(2) input { text-align: left; }
 
 .departments { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .dept { display: flex; flex-direction: column; align-items: center; background: #fff; border: 1px solid #999; border-radius: 4px; padding: 4px; }

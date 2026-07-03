@@ -32,7 +32,11 @@ export function getDefaultData() {
     tracks: { exertion: 0, exertionTotal: 0, reverence: 0 },
     weapons: [],                 // [{ name, toHit, aim, recoil, bDam, xDam, mag, range, mass, note }]
     aspects: [],                 // [{ name, type, cost, page }]
-    uniforms: { aStyle: "", aSus: "", bStyle: "", bSus: "" },
+    uniforms: {
+      aStyle: "", aSus: "", bStyle: "", bSus: "",
+      aSlots: { s1: { weapon: "", draw: "", mass: "", size: "" }, s2: { weapon: "", draw: "", mass: "", size: "" }, s3: { weapon: "", draw: "", mass: "", size: "" } },
+      bSlots: { s1: { weapon: "", draw: "", mass: "", size: "" }, s2: { weapon: "", draw: "", mass: "", size: "" }, s3: { weapon: "", draw: "", mass: "", size: "" } }
+    },
     everydayCarry: "", smallItems: "", storage: "", aspectNotes: "", miscNotes: "",
     departments
   };
