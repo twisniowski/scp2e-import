@@ -48,6 +48,14 @@
 .tab-body input::placeholder { color: #999; }
 .tab-body input[type="number"] { width: 48px; text-align: center; }
 .notes-area { width: 100%; text-align: left; resize: vertical; font-family: inherit; }
+table.inv-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 6px; }
+table.inv-table th { background: #2b2b2b; color: #fff; font-size: 9px; text-transform: uppercase; padding: 2px 6px; text-align: left; }
+table.inv-table th:nth-child(2) { width: 56px; text-align: center; }
+table.inv-table th:last-child { width: 24px; }
+table.inv-table td { border: 1px solid #ccc; padding: 1px; }
+table.inv-table td:first-child input { text-align: left; }
+table.inv-table input { width: 100%; border: none; background: transparent; }
+table.inv-table td:nth-child(2) input { text-align: center; }
 .tab-body label, .tab-body .skill-name, .tab-body .skill-cap { color: #1a1a1a; }
 
 /* Attributes */

@@ -2,7 +2,7 @@
   "id": "scp2e-character-sheet",
   "title": "SCP 2e Character Sheet",
   "description": "A dynamic, editable SCP Foundation 2e character sheet for Foundry VTT, with one-click import from the official fillable PDF character sheet. Works under any game system (data is stored in actor flags).",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "compatibility": {
     "minimum": 13,
     "verified": 14

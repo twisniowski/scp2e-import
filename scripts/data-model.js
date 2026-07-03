@@ -39,7 +39,8 @@ export function getDefaultData() {
       aSlots: { s1: slot(), s2: slot(), s3: slot() },
       bSlots: { s1: slot(), s2: slot(), s3: slot() }
     },
-    everydayCarry: "", smallItems: "", storage: "", aspectNotes: "", miscNotes: "",
+    everydayCarry: [], smallItems: [], storage: [],   // [{ name, qty }]
+    aspectNotes: "", miscNotes: "",
     departments
   };
 }
@@ -68,5 +69,8 @@ export function computeSkillCaps(data) {
 export const EMPTY_ROWS = {
   weapons: { name: "", toHit: "", aim: "", recoil: "", bDam: "", xDam: "", mag: "", range: "", mass: "", note: "" },
   aspects: { name: "", type: "power", cost: "", page: "" },
-  customSkills: { name: "", gov: "", value: 0 }
+  customSkills: { name: "", gov: "", value: 0 },
+  everydayCarry: { name: "", qty: "" },
+  smallItems: { name: "", qty: "" },
+  storage: { name: "", qty: "" }
 };

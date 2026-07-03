@@ -4,7 +4,7 @@
  * Reads the AcroForm fields of a filled-in official SCP2e fillable PDF and writes
  * them into the actor's SCP flag (flags.scp2e-character-sheet.data). Text fields
  * are mapped by geometry (scripts/field-map.json); the attribute dice pools are
- * decoded from the upgrade checkboxes (scripts/dice-map.json).
+ * decoded from the die checkboxes (scripts/dice-map.json).
  */
 import { MODULE_ID, FLAG_KEY } from "./const.js";
 import { normalizeData } from "./data-model.js";
@@ -117,10 +117,13 @@ function buildData(rawFields, fieldMap, diceMap) {
     foundry.utils.setProperty(data, map.target.replace(/^system\./, ""), value);
   }
 
+  // Grouped fields (everyday carry / small items / storage) become inventory
+  // rows: one { name, qty } per non-empty PDF entry, in reading order.
   for (const [group, items] of Object.entries(groups)) {
-    const text = items.sort((a, b) => a.order - b.order)
-      .map((i) => String(i.value).trim()).filter(Boolean).join("\n");
-    if (text) foundry.utils.setProperty(data, group, text);
+    const rows = items.sort((a, b) => a.order - b.order)
+      .map((i) => String(i.value).trim()).filter(Boolean)
+      .map((itemName) => ({ name: itemName, qty: "" }));
+    if (rows.length) foundry.utils.setProperty(data, group, rows);
   }
 
   const weapons = Object.keys(weaponRows)
@@ -139,9 +142,7 @@ function buildData(rawFields, fieldMap, diceMap) {
   return { name, data };
 }
 
-/**
- * Import a filled SCP2e PDF File into an Actor (writing the SCP flag).
- */
+/** Import a filled SCP2e PDF File into an Actor (writing the SCP flag). */
 export async function importPdfToActor(file, actor) {
   const buffer = await file.arrayBuffer();
   const [fieldMap, diceMap] = await Promise.all([

@@ -15,7 +15,7 @@ const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
 /** Array-valued flag keys that need object->array fixup on submit. */
-const ARRAY_KEYS = ["weapons", "aspects", "customSkills"];
+const ARRAY_KEYS = ["weapons", "aspects", "customSkills", "everydayCarry", "smallItems", "storage"];
 
 export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
@@ -34,6 +34,8 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       addCustomSkill: SCP2eCharacterSheet.#onAddRow,
       deleteCustomSkill: SCP2eCharacterSheet.#onDeleteRow,
       adjustTrack: SCP2eCharacterSheet.#onAdjustTrack,
+      addInv: SCP2eCharacterSheet.#onAddRow,
+      delInv: SCP2eCharacterSheet.#onDeleteRow,
       rollAttribute: SCP2eCharacterSheet.#onRollAttribute,
       rollSkill: SCP2eCharacterSheet.#onRollSkill
     }
