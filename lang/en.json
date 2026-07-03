@@ -45,7 +45,7 @@
   "SCP2E.Skills.Standard": "Skills",
   "SCP2E.Skills.Custom": "Custom Skills",
   "SCP2E.Skills.CustomName": "Skill name",
-  "SCP2E.Skills.Cap": "Skill cap = ½ governing attribute",
+  "SCP2E.Skills.Cap": "Skill cap = half the governing attribute, rounded up",
   "SCP2E.Skill.Awareness": "Awareness",
   "SCP2E.Skill.Dodge": "Dodge",
   "SCP2E.Skill.Firearms": "Firearms",
