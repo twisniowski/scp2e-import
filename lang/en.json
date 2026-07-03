@@ -124,5 +124,7 @@
   "SCP2E.Inv.Max": "Max",
   "SCP2E.Inv.Full": "This inventory is full (max {max}).",
   "SCP2E.Inv.RemoveTitle": "Remove item",
-  "SCP2E.Inv.ConfirmRemove": "Are you sure you want to remove “{name}”?"
+  "SCP2E.Inv.ConfirmRemove": "Are you sure you want to remove “{name}”?",
+  "SCP2E.Inv.Item": "Item Name",
+  "SCP2E.Inv.Qty": "Qty"
 }

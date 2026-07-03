@@ -50,7 +50,7 @@
 .notes-area { width: 100%; text-align: left; resize: vertical; font-family: inherit; }
 table.inv-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 6px; }
 table.inv-table th { background: #2b2b2b; color: #fff; font-size: 9px; text-transform: uppercase; padding: 2px 6px; text-align: left; }
-table.inv-table th:nth-child(2) { width: 56px; text-align: center; }
+table.inv-table th:nth-child(2) { width: 30px; text-align: center; }
 table.inv-table th:last-child { width: 24px; }
 table.inv-table td { border: 1px solid #ccc; padding: 1px; }
 table.inv-table td:first-child input { text-align: left; }
