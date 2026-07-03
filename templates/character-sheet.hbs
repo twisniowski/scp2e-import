@@ -355,51 +355,77 @@
   {{!-- ============================ NOTES ============================ --}}
   {{#if (eq activeTab "notes")}}
   <div class="scp2e-notes">
-    <h3>{{localize "SCP2E.Field.EverydayCarry"}}
-      <button type="button" class="add-row" data-action="addInv" data-array="everydayCarry" title="Add item"><i class="fa-solid fa-plus"></i></button>
-    </h3>
-    <table class="inv-table">
-      <thead><tr><th>{{localize "SCP2E.Inv.Item"}}</th><th>{{localize "SCP2E.Inv.Qty"}}</th><th></th></tr></thead>
-      <tbody>
-      {{#each data.everydayCarry as |row i|}}
-        <tr>
-          <td><input type="text" name="flags.scp2e-character-sheet.data.everydayCarry.{{i}}.name" value="{{row.name}}"/></td>
-          <td><input type="text" name="flags.scp2e-character-sheet.data.everydayCarry.{{i}}.qty" value="{{row.qty}}"/></td>
-          <td><button type="button" class="del-row" data-action="delInv" data-array="everydayCarry" data-index="{{i}}" title="Remove"><i class="fa-solid fa-minus"></i></button></td>
-        </tr>
-      {{/each}}
-      </tbody>
-    </table>
-    <h3>{{localize "SCP2E.Field.SmallItems"}}
-      <button type="button" class="add-row" data-action="addInv" data-array="smallItems" title="Add item"><i class="fa-solid fa-plus"></i></button>
-    </h3>
-    <table class="inv-table">
-      <thead><tr><th>{{localize "SCP2E.Inv.Item"}}</th><th>{{localize "SCP2E.Inv.Qty"}}</th><th></th></tr></thead>
-      <tbody>
-      {{#each data.smallItems as |row i|}}
-        <tr>
-          <td><input type="text" name="flags.scp2e-character-sheet.data.smallItems.{{i}}.name" value="{{row.name}}"/></td>
-          <td><input type="text" name="flags.scp2e-character-sheet.data.smallItems.{{i}}.qty" value="{{row.qty}}"/></td>
-          <td><button type="button" class="del-row" data-action="delInv" data-array="smallItems" data-index="{{i}}" title="Remove"><i class="fa-solid fa-minus"></i></button></td>
-        </tr>
-      {{/each}}
-      </tbody>
-    </table>
-    <h3>{{localize "SCP2E.Field.Container"}}
-      <button type="button" class="add-row" data-action="addInv" data-array="storage" title="Add item"><i class="fa-solid fa-plus"></i></button>
-    </h3>
-    <table class="inv-table">
-      <thead><tr><th>{{localize "SCP2E.Inv.Item"}}</th><th>{{localize "SCP2E.Inv.Qty"}}</th><th></th></tr></thead>
-      <tbody>
-      {{#each data.storage as |row i|}}
-        <tr>
-          <td><input type="text" name="flags.scp2e-character-sheet.data.storage.{{i}}.name" value="{{row.name}}"/></td>
-          <td><input type="text" name="flags.scp2e-character-sheet.data.storage.{{i}}.qty" value="{{row.qty}}"/></td>
-          <td><button type="button" class="del-row" data-action="delInv" data-array="storage" data-index="{{i}}" title="Remove"><i class="fa-solid fa-minus"></i></button></td>
-        </tr>
-      {{/each}}
-      </tbody>
-    </table>
+    <div class="inventories">
+      <div class="inv-block">
+        <div class="inv-head">
+          <span class="inv-title">{{localize "SCP2E.Field.EverydayCarry"}}</span>
+          <span class="inv-max">{{localize "SCP2E.Inv.Max"}}
+            <button type="button" class="inv-mbtn" data-action="adjustInvMax" data-inv="everydayCarry" data-delta="-1">−</button>
+            <b>{{data.invMax.everydayCarry}}</b>
+            <button type="button" class="inv-mbtn" data-action="adjustInvMax" data-inv="everydayCarry" data-delta="1">+</button>
+          </span>
+          <button type="button" class="inv-add" data-action="addInv" data-array="everydayCarry" title="Add item"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <table class="inv-table">
+          <thead><tr><th>{{localize "SCP2E.Inv.Item"}}</th><th>{{localize "SCP2E.Inv.Qty"}}</th><th></th></tr></thead>
+          <tbody>
+          {{#each data.everydayCarry as |row i|}}
+            <tr>
+              <td><input type="text" name="flags.scp2e-character-sheet.data.everydayCarry.{{i}}.name" value="{{row.name}}"/></td>
+              <td><input type="text" name="flags.scp2e-character-sheet.data.everydayCarry.{{i}}.qty" value="{{row.qty}}"/></td>
+              <td><button type="button" class="del-row" data-action="delInv" data-array="everydayCarry" data-index="{{i}}" title="Remove"><i class="fa-solid fa-minus"></i></button></td>
+            </tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+      <div class="inv-block">
+        <div class="inv-head">
+          <span class="inv-title">{{localize "SCP2E.Field.SmallItems"}}</span>
+          <span class="inv-max">{{localize "SCP2E.Inv.Max"}}
+            <button type="button" class="inv-mbtn" data-action="adjustInvMax" data-inv="smallItems" data-delta="-1">−</button>
+            <b>{{data.invMax.smallItems}}</b>
+            <button type="button" class="inv-mbtn" data-action="adjustInvMax" data-inv="smallItems" data-delta="1">+</button>
+          </span>
+          <button type="button" class="inv-add" data-action="addInv" data-array="smallItems" title="Add item"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <table class="inv-table">
+          <thead><tr><th>{{localize "SCP2E.Inv.Item"}}</th><th>{{localize "SCP2E.Inv.Qty"}}</th><th></th></tr></thead>
+          <tbody>
+          {{#each data.smallItems as |row i|}}
+            <tr>
+              <td><input type="text" name="flags.scp2e-character-sheet.data.smallItems.{{i}}.name" value="{{row.name}}"/></td>
+              <td><input type="text" name="flags.scp2e-character-sheet.data.smallItems.{{i}}.qty" value="{{row.qty}}"/></td>
+              <td><button type="button" class="del-row" data-action="delInv" data-array="smallItems" data-index="{{i}}" title="Remove"><i class="fa-solid fa-minus"></i></button></td>
+            </tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+      <div class="inv-block">
+        <div class="inv-head">
+          <span class="inv-title">{{localize "SCP2E.Field.Container"}}</span>
+          <span class="inv-max">{{localize "SCP2E.Inv.Max"}}
+            <button type="button" class="inv-mbtn" data-action="adjustInvMax" data-inv="storage" data-delta="-1">−</button>
+            <b>{{data.invMax.storage}}</b>
+            <button type="button" class="inv-mbtn" data-action="adjustInvMax" data-inv="storage" data-delta="1">+</button>
+          </span>
+          <button type="button" class="inv-add" data-action="addInv" data-array="storage" title="Add item"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <table class="inv-table">
+          <thead><tr><th>{{localize "SCP2E.Inv.Item"}}</th><th>{{localize "SCP2E.Inv.Qty"}}</th><th></th></tr></thead>
+          <tbody>
+          {{#each data.storage as |row i|}}
+            <tr>
+              <td><input type="text" name="flags.scp2e-character-sheet.data.storage.{{i}}.name" value="{{row.name}}"/></td>
+              <td><input type="text" name="flags.scp2e-character-sheet.data.storage.{{i}}.qty" value="{{row.qty}}"/></td>
+              <td><button type="button" class="del-row" data-action="delInv" data-array="storage" data-index="{{i}}" title="Remove"><i class="fa-solid fa-minus"></i></button></td>
+            </tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
     <h3>{{localize "SCP2E.Field.MiscNotes"}}</h3>
     <textarea class="notes-area" name="flags.scp2e-character-sheet.data.miscNotes" rows="6">{{data.miscNotes}}</textarea>
   </div>

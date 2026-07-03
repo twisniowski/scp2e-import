@@ -34,8 +34,9 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       addCustomSkill: SCP2eCharacterSheet.#onAddRow,
       deleteCustomSkill: SCP2eCharacterSheet.#onDeleteRow,
       adjustTrack: SCP2eCharacterSheet.#onAdjustTrack,
-      addInv: SCP2eCharacterSheet.#onAddRow,
-      delInv: SCP2eCharacterSheet.#onDeleteRow,
+      addInv: SCP2eCharacterSheet.#onAddInv,
+      delInv: SCP2eCharacterSheet.#onDeleteInv,
+      adjustInvMax: SCP2eCharacterSheet.#onAdjustInvMax,
       rollAttribute: SCP2eCharacterSheet.#onRollAttribute,
       rollSkill: SCP2eCharacterSheet.#onRollSkill
     }
@@ -191,6 +192,60 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     } catch (err) {
       console.error("SCP2e | skill roll failed:", err);
       ui.notifications.error("SCP2e: roll failed (see console).");
+    }
+  }
+
+  /** Add an inventory row, respecting that inventory's max item count. */
+  static async #onAddInv(event, target) {
+    try {
+      const key = target.dataset.array;
+      const rows = foundry.utils.deepClone(this.scpData[key] ?? []);
+      const max = Number(this.scpData.invMax?.[key] ?? 6);
+      if (rows.length >= max) {
+        ui.notifications.warn(game.i18n.format("SCP2E.Inv.Full", { max }));
+        return;
+      }
+      rows.push({ name: "", qty: "" });
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.${key}`, rows);
+    } catch (err) {
+      console.error("SCP2e | add item failed:", err);
+      ui.notifications.error("SCP2e: could not add item (see console).");
+    }
+  }
+
+  /** Remove an inventory row, confirming first if the item has a name. */
+  static async #onDeleteInv(event, target) {
+    try {
+      const key = target.dataset.array;
+      const index = Number(target.dataset.index);
+      const rows = this.scpData[key] ?? [];
+      const nm = String(rows[index]?.name ?? "").trim();
+      if (nm) {
+        const content = `<p>${game.i18n.format("SCP2E.Inv.ConfirmRemove", { name: Handlebars.escapeExpression(nm) })}</p>`;
+        const DV2 = foundry.applications?.api?.DialogV2;
+        const ok = DV2?.confirm
+          ? await DV2.confirm({ window: { title: game.i18n.localize("SCP2E.Inv.RemoveTitle") }, content, modal: true })
+          : await Dialog.confirm({ title: game.i18n.localize("SCP2E.Inv.RemoveTitle"), content });
+        if (!ok) return;
+      }
+      const next = rows.filter((_, i) => i !== index);
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.${key}`, next);
+    } catch (err) {
+      console.error("SCP2e | remove item failed:", err);
+      ui.notifications.error("SCP2e: could not remove item (see console).");
+    }
+  }
+
+  /** Adjust an inventory's max item count (min 1). */
+  static async #onAdjustInvMax(event, target) {
+    try {
+      const key = target.dataset.inv;
+      const delta = Number(target.dataset.delta);
+      const cur = Number(this.scpData.invMax?.[key] ?? 6);
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.invMax.${key}`, Math.max(1, cur + delta));
+    } catch (err) {
+      console.error("SCP2e | inventory max failed:", err);
+      ui.notifications.error("SCP2e: could not change max (see console).");
     }
   }
 

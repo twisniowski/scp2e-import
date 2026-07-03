@@ -120,5 +120,9 @@
   "SCP2E.Slots.Weapon": "Weapon",
   "SCP2E.Slots.Draw": "Draw",
   "SCP2E.Slots.Mass": "Mass",
-  "SCP2E.Slots.Size": "Size"
+  "SCP2E.Slots.Size": "Size",
+  "SCP2E.Inv.Max": "Max",
+  "SCP2E.Inv.Full": "This inventory is full (max {max}).",
+  "SCP2E.Inv.RemoveTitle": "Remove item",
+  "SCP2E.Inv.ConfirmRemove": "Are you sure you want to remove “{name}”?"
 }

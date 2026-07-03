@@ -40,6 +40,7 @@ export function getDefaultData() {
       bSlots: { s1: slot(), s2: slot(), s3: slot() }
     },
     everydayCarry: [], smallItems: [], storage: [],   // [{ name, qty }]
+    invMax: { everydayCarry: 6, smallItems: 6, storage: 6 },
     aspectNotes: "", miscNotes: "",
     departments
   };
