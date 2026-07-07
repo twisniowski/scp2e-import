@@ -72,6 +72,24 @@ Hooks.once("setup", () => {
     }
     return _modify.call(this, attribute, value, isDelta, isBar);
   };
+
+  // Recolour our HP bar: interpolate from #240003 (empty) to #85000b (full).
+  const Token = foundry.canvas?.placeables?.Token ?? globalThis.Token;
+  const _getBarColors = Token?.prototype?._getBarColors;
+  if (typeof _getBarColors === "function") {
+    const LOW = [0x24 / 255, 0x00 / 255, 0x03 / 255];
+    const HIGH = [0x85 / 255, 0x00 / 255, 0x0b / 255];
+    Token.prototype._getBarColors = function (number, data) {
+      const base = _getBarColors.call(this, number, data);
+      if (base && data?.attribute === HP_BAR) {
+        const max = Number(data.max) || 0;
+        const pct = max > 0 ? Math.min(Math.max(Number(data.value) || 0, 0), max) / max : 0;
+        const lerp = (a, b) => a + (b - a) * pct;
+        base.fill = foundry.utils.Color.fromRGB([lerp(LOW[0], HIGH[0]), lerp(LOW[1], HIGH[1]), lerp(LOW[2], HIGH[2])]);
+      }
+      return base;
+    };
+  }
 });
 
 Hooks.once("ready", () => {
