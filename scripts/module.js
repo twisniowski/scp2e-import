@@ -6,7 +6,7 @@
  * all SCP data in an Actor flag. Apply it to any actor via the sheet picker, or
  * create one straight from a PDF.
  */
-import { MODULE_ID } from "./const.js";
+import { MODULE_ID, FLAG_KEY, HP_BAR } from "./const.js";
 import { SCP2E } from "./config.js";
 import { SCP2eCharacterSheet } from "./sheet.js";
 import { SCP2eNpcSheet } from "./npc-sheet.js";
@@ -42,6 +42,36 @@ Hooks.once("init", () => {
       label: "SCP2E.NpcSheetLabel"
     }
   );
+});
+
+/**
+ * Route our flag-based HP onto Foundry token resource bars, since token bars
+ * normally read from actor.system (and our data lives in flags).
+ */
+Hooks.once("setup", () => {
+  const clamp = Math.clamp ?? ((n, a, b) => Math.min(Math.max(n, a), b));
+
+  const _getBar = TokenDocument.prototype.getBarAttribute;
+  TokenDocument.prototype.getBarAttribute = function (barName, options = {}) {
+    const attr = options.alternative ?? (barName ? this[barName]?.attribute : null);
+    if (attr === HP_BAR && this.actor) {
+      const h = this.actor.getFlag(MODULE_ID, FLAG_KEY)?.health ?? {};
+      return { type: "bar", attribute: attr, value: Number(h.hp) || 0, max: Number(h.maxHp) || 0, editable: true };
+    }
+    return _getBar.call(this, barName, options);
+  };
+
+  const _modify = Actor.prototype.modifyTokenAttribute;
+  Actor.prototype.modifyTokenAttribute = function (attribute, value, isDelta = false, isBar = true) {
+    if (attribute === HP_BAR) {
+      const h = this.getFlag(MODULE_ID, FLAG_KEY)?.health ?? {};
+      const max = Number(h.maxHp) || 0;
+      let next = isDelta ? (Number(h.hp) || 0) + value : value;
+      next = max > 0 ? clamp(next, 0, max) : Math.max(0, next);
+      return this.update({ [HP_BAR]: next });
+    }
+    return _modify.call(this, attribute, value, isDelta, isBar);
+  };
 });
 
 Hooks.once("ready", () => {

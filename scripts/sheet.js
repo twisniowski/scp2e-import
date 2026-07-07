@@ -100,6 +100,12 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     return context;
   }
 
+  /** Ensure the actor's token HP bar points at our flag HP. */
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+    ensureHpBar(this.actor);
+  }
+
   /**
    * Foundry expands `...weapons.0.name` form fields into an object keyed by
    * index ({0:{...}}). Convert those back into real arrays before saving, since

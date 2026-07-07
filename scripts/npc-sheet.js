@@ -1,29 +1,30 @@
 /**
  * SCP 2e NPC sheet — a simplified, single-page variant of the character sheet.
- * Shares the same flag data; adds NPC-only fields (threat level, containment
- * class, Physical/Mental/Social skills, an attack table and notes).
+ * Shares the same flag data. Attributes are full dice pools (rollable, like the
+ * PC sheet); HP is current/max; the weapon list is the same Weapons table as the
+ * player sheet.
  */
 import { ATTRIBUTES } from "./config.js";
-import { normalizeData } from "./data-model.js";
+import { normalizeData, EMPTY_ROWS } from "./data-model.js";
 import { rollPool } from "./roll.js";
-import { MODULE_ID, FLAG_KEY } from "./const.js";
+import { MODULE_ID, FLAG_KEY, ensureHpBar } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
-const ARRAY_KEYS = ["npcAttacks"];
+const ARRAY_KEYS = ["weapons"];
 
 export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["scp2e", "sheet", "actor", "npc"],
-    position: { width: 540, height: 720 },
+    position: { width: 560, height: 760 },
     window: { resizable: true, icon: "fa-solid fa-skull" },
     form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
       editImage: SCP2eNpcSheet.#onEditImage,
       rollAttribute: SCP2eNpcSheet.#onRollAttribute,
-      addAttack: SCP2eNpcSheet.#onAddAttack,
-      delAttack: SCP2eNpcSheet.#onDelAttack
+      addWeapon: SCP2eNpcSheet.#onAddRow,
+      deleteWeapon: SCP2eNpcSheet.#onDeleteRow
     }
   };
 
@@ -43,18 +44,23 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.data = data;
     context.editable = this.isEditable;
 
-    const A = (k) => ({ key: k, abbr: ATTRIBUTES[k].abbr, value: data.attributes[k]?.value ?? 0 });
+    const A = (k) => ({
+      key: k,
+      abbr: ATTRIBUTES[k].abbr,
+      value: data.attributes[k]?.value ?? 0,
+      dice: data.attributes[k]?.dice ?? { d6: 0, d8: 0, d10: 0, d12: 0 }
+    });
     context.attrRows = [
       [A("strength"), A("dexterity")],
       [A("perception"), A("health")],
       [A("intellect"), A("willpower")],
       [A("charisma"), A("fate")]
     ];
-    context.attacks = data.npcAttacks ?? [];
+    context.weapons = data.weapons ?? [];
     return context;
   }
 
-  /** Rebuild the attacks array from index-keyed form data before saving. */
+  /** Rebuild the weapons array from index-keyed form data before saving. */
   async _processSubmitData(event, form, submitData, options) {
     try {
       const node = submitData?.flags?.[MODULE_ID]?.[FLAG_KEY];
@@ -73,6 +79,12 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
   }
 
+  /** Ensure the actor's token HP bar points at our flag HP. */
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+    ensureHpBar(this.actor);
+  }
+
   static #onEditImage() {
     const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
     return new FP({ type: "image", current: this.actor.img, callback: (path) => this.actor.update({ img: path }) }).render(true);
@@ -87,25 +99,27 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
   }
 
-  static async #onAddAttack() {
+  static async #onAddRow(event, target) {
     try {
-      const rows = foundry.utils.deepClone(this.scpData.npcAttacks ?? []);
-      rows.push({ name: "", toHit: "", damage: "", range: "", dmgType: "", note: "" });
-      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.npcAttacks`, rows);
+      const key = target.dataset.array;
+      const rows = foundry.utils.deepClone(this.scpData[key] ?? []);
+      rows.push(foundry.utils.deepClone(EMPTY_ROWS[key] ?? {}));
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.${key}`, rows);
     } catch (err) {
-      console.error("SCP2e | NPC add attack failed:", err);
-      ui.notifications.error("SCP2e: could not add attack (see console).");
+      console.error("SCP2e | NPC add row failed:", err);
+      ui.notifications.error("SCP2e: could not add row (see console).");
     }
   }
 
-  static async #onDelAttack(event, target) {
+  static async #onDeleteRow(event, target) {
     try {
+      const key = target.dataset.array;
       const index = Number(target.dataset.index);
-      const rows = (this.scpData.npcAttacks ?? []).filter((_, i) => i !== index);
-      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.npcAttacks`, rows);
+      const rows = (this.scpData[key] ?? []).filter((_, i) => i !== index);
+      await this.actor.setFlag(MODULE_ID, `${FLAG_KEY}.${key}`, rows);
     } catch (err) {
-      console.error("SCP2e | NPC delete attack failed:", err);
-      ui.notifications.error("SCP2e: could not remove attack (see console).");
+      console.error("SCP2e | NPC delete row failed:", err);
+      ui.notifications.error("SCP2e: could not remove row (see console).");
     }
   }
 }
