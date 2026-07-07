@@ -40,6 +40,12 @@ export function getDefaultData() {
       bSlots: { s1: slot(), s2: slot(), s3: slot() }
     },
     everydayCarry: [], smallItems: [], storage: [],   // [{ name, qty }]
+    npc: {
+      designation: "", threatLevel: "", containmentClass: "",
+      skills: { physical: { value: 0, mult: "" }, mental: { value: 0, mult: "" }, social: { value: 0, mult: "" } },
+      notes: ""
+    },
+    npcAttacks: [],   // [{ name, toHit, damage, range, dmgType, note }]
     invMax: { everydayCarry: 8, smallItems: 6, storage: 6 },
     aspectNotes: "", miscNotes: "",
     departments
@@ -71,6 +77,7 @@ export const EMPTY_ROWS = {
   weapons: { name: "", toHit: "", aim: "", recoil: "", bDam: "", xDam: "", mag: "", range: "", mass: "", note: "" },
   aspects: { name: "", type: "power", cost: "", page: "" },
   customSkills: { name: "", gov: "", value: 0 },
+  npcAttacks: { name: "", toHit: "", damage: "", range: "", dmgType: "", note: "" },
   everydayCarry: { name: "", qty: "" },
   smallItems: { name: "", qty: "" },
   storage: { name: "", qty: "" }

@@ -1,0 +1,101 @@
+<div class="scp2e-npc">
+  <div class="npc-body">
+
+  {{!-- Header --}}
+  <header class="npc-header">
+    <div class="npc-idbox">
+      <label class="npc-scp">{{localize "SCP2E.Npc.Designation"}}</label>
+      <input type="text" class="npc-desig" name="flags.scp2e-character-sheet.data.npc.designation" value="{{data.npc.designation}}"/>
+      <input type="text" class="npc-name" name="name" value="{{actor.name}}" placeholder="Name"/>
+    </div>
+    <div class="npc-threatbox">
+      <div class="npc-threat"><label>{{localize "SCP2E.Npc.ThreatLevel"}}:</label>
+        <input type="text" name="flags.scp2e-character-sheet.data.npc.threatLevel" value="{{data.npc.threatLevel}}"/></div>
+      <div class="npc-contain"><label>{{localize "SCP2E.Npc.ContainmentClass"}}:</label>
+        <input type="text" name="flags.scp2e-character-sheet.data.npc.containmentClass" value="{{data.npc.containmentClass}}"/></div>
+    </div>
+  </header>
+
+  {{!-- Attributes + Skills + Portrait --}}
+  <div class="npc-top">
+    <div class="npc-attrs">
+      {{#each attrRows}}
+        <div class="npc-attr-row">
+          {{#each this}}
+            <div class="npc-attr">
+              <button type="button" class="npc-attr-btn" data-action="rollAttribute" data-attr="{{key}}" title="{{localize 'SCP2E.Roll.Attribute'}}">{{abbr}}:</button>
+              <input type="number" name="flags.scp2e-character-sheet.data.attributes.{{key}}.value" value="{{value}}" min="0"/>
+            </div>
+          {{/each}}
+        </div>
+      {{/each}}
+    </div>
+
+    <div class="npc-skills">
+      <div class="npc-skills-title">{{localize "SCP2E.Npc.Skills"}}</div>
+      <div class="npc-skill"><label>{{localize "SCP2E.Npc.Physical"}}:</label>
+        <input type="number" name="flags.scp2e-character-sheet.data.npc.skills.physical.value" value="{{data.npc.skills.physical.value}}"/>
+        <span class="npc-mult">(<input type="text" name="flags.scp2e-character-sheet.data.npc.skills.physical.mult" value="{{data.npc.skills.physical.mult}}"/>)</span>
+      </div>
+      <div class="npc-skill"><label>{{localize "SCP2E.Npc.Mental"}}:</label>
+        <input type="number" name="flags.scp2e-character-sheet.data.npc.skills.mental.value" value="{{data.npc.skills.mental.value}}"/>
+        <span class="npc-mult">(<input type="text" name="flags.scp2e-character-sheet.data.npc.skills.mental.mult" value="{{data.npc.skills.mental.mult}}"/>)</span>
+      </div>
+      <div class="npc-skill"><label>{{localize "SCP2E.Npc.Social"}}:</label>
+        <input type="number" name="flags.scp2e-character-sheet.data.npc.skills.social.value" value="{{data.npc.skills.social.value}}"/>
+        <span class="npc-mult">(<input type="text" name="flags.scp2e-character-sheet.data.npc.skills.social.mult" value="{{data.npc.skills.social.mult}}"/>)</span>
+      </div>
+    </div>
+
+    <div class="npc-portrait">
+      <img src="{{actor.img}}" data-action="editImage" title="{{localize 'SCP2E.Portrait'}}" alt="portrait"/>
+    </div>
+  </div>
+
+  {{!-- Secondary stats --}}
+  <div class="npc-stats">
+    <div class="npc-stat"><label>{{localize "SCP2E.Npc.Speed"}}:</label>
+      <input type="text" name="flags.scp2e-character-sheet.data.combat.speed" value="{{data.combat.speed}}"/></div>
+    <div class="npc-stat"><label>{{localize "SCP2E.Npc.Combat"}}:</label>
+      <input type="text" name="flags.scp2e-character-sheet.data.combat.combat" value="{{data.combat.combat}}"/></div>
+    <div class="npc-stat"><label>{{localize "SCP2E.Npc.Projectile"}}:</label>
+      <input type="text" name="flags.scp2e-character-sheet.data.combat.projectile" value="{{data.combat.projectile}}"/></div>
+    <div class="npc-exert"><label>{{localize "SCP2E.Field.Exertion"}}</label>
+      <input type="number" name="flags.scp2e-character-sheet.data.tracks.exertion" value="{{data.tracks.exertion}}" min="0"/></div>
+    <div class="npc-hp"><label>{{localize "SCP2E.Field.HP"}}:</label>
+      <input type="number" name="flags.scp2e-character-sheet.data.health.hp" value="{{data.health.hp}}"/></div>
+  </div>
+
+  {{!-- Attacks --}}
+  <table class="npc-attacks">
+    <thead>
+      <tr>
+        <th>{{localize "SCP2E.Npc.Attack"}}</th>
+        <th>{{localize "SCP2E.Npc.ToHit"}}</th>
+        <th>{{localize "SCP2E.Npc.Damage"}}</th>
+        <th>{{localize "SCP2E.Npc.Range"}}</th>
+        <th>{{localize "SCP2E.Npc.DmgType"}}</th>
+        <th>{{localize "SCP2E.Npc.Note"}}</th>
+        <th><button type="button" class="npc-add" data-action="addAttack" title="Add attack"><i class="fa-solid fa-plus"></i></button></th>
+      </tr>
+    </thead>
+    <tbody>
+    {{#each attacks as |a i|}}
+      <tr>
+        <td><input type="text" name="flags.scp2e-character-sheet.data.npcAttacks.{{i}}.name" value="{{a.name}}"/></td>
+        <td><input type="text" name="flags.scp2e-character-sheet.data.npcAttacks.{{i}}.toHit" value="{{a.toHit}}"/></td>
+        <td><input type="text" name="flags.scp2e-character-sheet.data.npcAttacks.{{i}}.damage" value="{{a.damage}}"/></td>
+        <td><input type="text" name="flags.scp2e-character-sheet.data.npcAttacks.{{i}}.range" value="{{a.range}}"/></td>
+        <td><input type="text" name="flags.scp2e-character-sheet.data.npcAttacks.{{i}}.dmgType" value="{{a.dmgType}}"/></td>
+        <td><input type="text" name="flags.scp2e-character-sheet.data.npcAttacks.{{i}}.note" value="{{a.note}}"/></td>
+        <td><button type="button" class="del-row" data-action="delAttack" data-index="{{i}}" title="Remove"><i class="fa-solid fa-minus"></i></button></td>
+      </tr>
+    {{/each}}
+    </tbody>
+  </table>
+
+  {{!-- Notes --}}
+  <textarea class="npc-notes" name="flags.scp2e-character-sheet.data.npc.notes" rows="8" placeholder="{{localize 'SCP2E.Npc.Notes'}}">{{data.npc.notes}}</textarea>
+
+  </div>
+</div>

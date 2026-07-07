@@ -9,6 +9,7 @@
 import { MODULE_ID } from "./const.js";
 import { SCP2E } from "./config.js";
 import { SCP2eCharacterSheet } from "./sheet.js";
+import { SCP2eNpcSheet } from "./npc-sheet.js";
 import { promptPdfImport } from "./pdf-import.js";
 
 Hooks.once("init", () => {
@@ -29,6 +30,16 @@ Hooks.once("init", () => {
       types: types.length ? types : undefined,
       makeDefault: false,
       label: "SCP2E.SheetLabel"
+    }
+  );
+
+  // Register the simplified NPC variant as a second selectable sheet.
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(
+    Actor, MODULE_ID, SCP2eNpcSheet,
+    {
+      types: types.length ? types : undefined,
+      makeDefault: false,
+      label: "SCP2E.NpcSheetLabel"
     }
   );
 });
