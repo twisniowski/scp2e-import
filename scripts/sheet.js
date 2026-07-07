@@ -9,7 +9,7 @@ import { ATTRIBUTES, SKILLS, DISRUPTION_CLASSES, DEPARTMENTS } from "./config.js
 import { normalizeData, computeSkillCaps, EMPTY_ROWS } from "./data-model.js";
 import { promptPdfImport } from "./pdf-import.js";
 import { rollPool } from "./roll.js";
-import { MODULE_ID, FLAG_KEY } from "./const.js";
+import { MODULE_ID, FLAG_KEY, ensureHpBar } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
