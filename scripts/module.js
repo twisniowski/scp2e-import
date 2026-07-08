@@ -79,34 +79,31 @@ Hooks.once("setup", () => {
   // (the private _getBarColors is not consulted for the fill), so to recolour our
   // HP bar we override drawBars, reproducing core behaviour and only swapping the
   // colour formula for our HP attribute. Everything else keeps the default look.
-  const Token = foundry.canvas?.placeables?.Token ?? globalThis.Token;
-  const ColorCls = foundry.utils?.Color ?? globalThis.Color;
-  if (Token?.prototype?.drawBars && ColorCls?.fromRGB) {
-    const LOW = [0x24 / 255, 0x00 / 255, 0x03 / 255];   // empty / low HP
-    const HIGH = [0x85 / 255, 0x00 / 255, 0x0b / 255];  // full HP
+  try {
+    const Token = foundry.canvas?.placeables?.Token ?? globalThis.Token;
+    const ColorCls = foundry.utils?.Color ?? globalThis.Color;
+    const _drawBars = Token?.prototype?.drawBars;
+    if (typeof _drawBars === "function" && ColorCls?.fromRGB) {
+      const LOW = [0x24 / 255, 0x00 / 255, 0x03 / 255];   // empty / low HP
+      const HIGH = [0x85 / 255, 0x00 / 255, 0x0b / 255];  // full HP
 
-    Token.prototype.drawBars = function () {
-      const NONE = CONST?.TOKEN_DISPLAY_MODES?.NONE ?? 0;
-      if (!this.actor || this.document.displayBars === NONE) return (this.bars.visible = false);
+      Token.prototype.drawBars = function () {
+        // Only take over drawing when one of our bars is the SCP HP attribute.
+        // For every other case — and on ANY error — defer to Foundry's native
+        // drawBars so this module can never break token rendering.
+        try {
+          const usesHp =
+            this.actor &&
+            (this.document?.bar1?.attribute === HP_BAR || this.document?.bar2?.attribute === HP_BAR);
+          if (!usesHp) return _drawBars.call(this);
 
-      ["bar1", "bar2"].forEach((b, number) => {
-        const bar = this.bars[b];
-        const data = this.document.getBarAttribute(b);
-        if (!data || data.type !== "bar") return (bar.visible = false);
+          const NONE = CONST?.TOKEN_DISPLAY_MODES?.NONE ?? 0;
+          if (this.document.displayBars === NONE) return (this.bars.visible = false);
 
-        const max = Number(data.max) || 0;
-        const pct = max > 0 ? clamp(Number(data.value) || 0, 0, max) / max : 0;
+          ["bar1", "bar2"].forEach((b, number) => {
+            const bar = this.bars[b];
+            const data = this.document.getBarAttribute(b);
+            if (!data || data.type !== "bar") return (bar.visible = false);
 
-        // Sizing (matches core).
-        let h = Math.max(canvas.dimensions.size / 12, 8);
-        const w = this.w;
-        const bs = clamp(h / 8, 1, 2);
-        if (this.document.height >= 2) h *= 1.6;
-        else if (this.document.height < 1) h *= 0.8;
-
-        const blk = 0x000000;
-
-        // Colour: our HP bar gets the SCP gradient; all other bars keep core colours.
-        let color;
-        if (data.attribute === HP_BAR) {
-          const lerp = (a, z) => a + 
+            const max = Number(data.max) || 0;
+            const
