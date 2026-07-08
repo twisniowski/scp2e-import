@@ -74,36 +74,45 @@ Hooks.once("setup", () => {
   };
 
   // Recolour our HP bar: interpolate from #240003 (empty) to #85000b (full).
-  //
-  // In v13/v14 the token bar fill colour is computed *inline* by Token#drawBars
-  // (the private _getBarColors is not consulted for the fill), so to recolour our
-  // HP bar we override drawBars, reproducing core behaviour and only swapping the
-  // colour formula for our HP attribute. Everything else keeps the default look.
-  try {
-    const Token = foundry.canvas?.placeables?.Token ?? globalThis.Token;
-    const ColorCls = foundry.utils?.Color ?? globalThis.Color;
-    const _drawBars = Token?.prototype?.drawBars;
-    if (typeof _drawBars === "function" && ColorCls?.fromRGB) {
-      const LOW = [0x24 / 255, 0x00 / 255, 0x03 / 255];   // empty / low HP
-      const HIGH = [0x85 / 255, 0x00 / 255, 0x0b / 255];  // full HP
+  const Token = foundry.canvas?.placeables?.Token ?? globalThis.Token;
+  const _getBarColors = Token?.prototype?._getBarColors;
+  if (typeof _getBarColors === "function") {
+    const LOW = [0x24 / 255, 0x00 / 255, 0x03 / 255];
+    const HIGH = [0x85 / 255, 0x00 / 255, 0x0b / 255];
+    Token.prototype._getBarColors = function (number, data) {
+      const base = _getBarColors.call(this, number, data);
+      if (base && data?.attribute === HP_BAR) {
+        const max = Number(data.max) || 0;
+        const pct = max > 0 ? Math.min(Math.max(Number(data.value) || 0, 0), max) / max : 0;
+        const lerp = (a, b) => a + (b - a) * pct;
+        base.fill = foundry.utils.Color.fromRGB([lerp(LOW[0], HIGH[0]), lerp(LOW[1], HIGH[1]), lerp(LOW[2], HIGH[2])]);
+      }
+      return base;
+    };
+  }
+});
 
-      Token.prototype.drawBars = function () {
-        // Only take over drawing when one of our bars is the SCP HP attribute.
-        // For every other case — and on ANY error — defer to Foundry's native
-        // drawBars so this module can never break token rendering.
-        try {
-          const usesHp =
-            this.actor &&
-            (this.document?.bar1?.attribute === HP_BAR || this.document?.bar2?.attribute === HP_BAR);
-          if (!usesHp) return _drawBars.call(this);
+Hooks.once("ready", () => {
+  const mod = game.modules.get(MODULE_ID);
+  if (mod) mod.api = { importPdf: promptPdfImport };
+});
 
-          const NONE = CONST?.TOKEN_DISPLAY_MODES?.NONE ?? 0;
-          if (this.document.displayBars === NONE) return (this.bars.visible = false);
+/**
+ * Add an "Import SCP PDF" button to the Actors directory footer.
+ */
+Hooks.on("renderActorDirectory", (app, html) => {
+  const root = html instanceof HTMLElement ? html : html?.[0];
+  if (!root || root.querySelector(".scp2e-import-pdf")) return;
 
-          ["bar1", "bar2"].forEach((b, number) => {
-            const bar = this.bars[b];
-            const data = this.document.getBarAttribute(b);
-            if (!data || data.type !== "bar") return (bar.visible = false);
+  const footer = root.querySelector(".directory-footer") ?? root.querySelector(".header-actions");
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "scp2e-import-pdf";
+  button.innerHTML = `<i class="fa-solid fa-file-import"></i> ${game.i18n.localize("SCP2E.Import.Button")}`;
+  button.addEventListener("click", () => promptPdfImport(null));
 
-            const max = Number(data.max) || 0;
-            const
+  if (footer) footer.appendChild(button);
+  else root.appendChild(button);
+});
+
+export { MODULE_ID };
