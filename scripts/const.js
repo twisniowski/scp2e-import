@@ -9,6 +9,17 @@ export const FLAG_PREFIX = `flags.${MODULE_ID}.${FLAG_KEY}`;
 export const HP_BAR = `${FLAG_PREFIX}.health.hp`;
 
 /**
+ * Apply a chat roll mode across Foundry versions. v14 renamed
+ * ChatMessage.applyRollMode -> ChatMessage.applyMode.
+ */
+export function applyChatRollMode(messageData, rollMode) {
+  const mode = rollMode || game.settings.get("core", "rollMode");
+  if (typeof ChatMessage.applyMode === "function") ChatMessage.applyMode(messageData, mode);
+  else if (typeof ChatMessage.applyRollMode === "function") ChatMessage.applyRollMode(messageData, mode);
+  return messageData;
+}
+
+/**
  * Point an actor's prototype token (and any active tokens) at our flag-based HP
  * so token health bars work. Safe to call repeatedly (no-op once set).
  */

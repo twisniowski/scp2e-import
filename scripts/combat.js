@@ -15,7 +15,7 @@
 import { SKILLS } from "./config.js";
 import { rollPool } from "./roll.js";
 import { normalizeData } from "./data-model.js";
-import { MODULE_ID, FLAG_KEY } from "./const.js";
+import { MODULE_ID, FLAG_KEY, applyChatRollMode } from "./const.js";
 
 /* -------------------------------------------------------------------------- */
 /*  Weapon keyword ("Special") effects — SCP 2e rulebook p151/p153            */
@@ -464,7 +464,9 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     doubleMax: fx.damageDoubleMax,
     reminders: fx.reminders
   };
-  const cardButton = `<button type="button" class="scp2e-damage-btn" data-payload="${encodeURIComponent(JSON.stringify(payload))}"><i class="fa-solid fa-heart-crack"></i> ${game.i18n.localize("SCP2E.Attack.ConfirmDamage")}</button>`;
+  // The attack context is stored as a flag on the chat message (robust against
+  // chat-content sanitisation); the button only needs its class + message id.
+  const cardButton = `<button type="button" class="scp2e-damage-btn"><i class="fa-solid fa-heart-crack"></i> ${game.i18n.localize("SCP2E.Attack.ConfirmDamage")}</button>`;
 
   await rollPool(actor, data, rollArgs.attrKey, {
     skillKey: rollArgs.skillKey ?? null,
@@ -476,7 +478,8 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     rollMode: choice.rollMode,
     title,
     notes: toHitNotes,
-    cardButton
+    cardButton,
+    messageFlags: { [MODULE_ID]: { attack: payload } }
   });
 }
 
@@ -614,36 +617,33 @@ async function rollDamage(actor, data, weapon, { ranged, thrown, rollMode, dieTy
     rolls: [roll],
     sound: CONFIG.sounds.dice
   };
-  ChatMessage.applyRollMode(messageData, rollMode || game.settings.get("core", "rollMode"));
+  applyChatRollMode(messageData, rollMode);
   await ChatMessage.create(messageData);
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Chat-card damage button wiring                                            */
+/*  Chat-card damage button wiring (single delegated listener)                */
 /* -------------------------------------------------------------------------- */
 
-async function onDamageClick(event) {
-  event.preventDefault();
-  const btn = event.currentTarget;
-  let payload;
-  try { payload = JSON.parse(decodeURIComponent(btn.dataset.payload)); } catch (e) { return; }
+async function handleDamageButton(btn) {
+  const li = btn.closest("[data-message-id]");
+  const msg = li ? game.messages.get(li.dataset.messageId) : null;
+  const payload = msg?.getFlag(MODULE_ID, "attack");
+  if (!payload) { ui.notifications.warn(game.i18n.localize("SCP2E.Attack.NoActor")); return; }
+
   const resolved = await fromUuid(payload.actorUuid).catch(() => null);
   const actor = resolved?.documentName === "Actor" ? resolved : resolved?.actor;
   if (!actor) { ui.notifications.warn(game.i18n.localize("SCP2E.Attack.NoActor")); return; }
   if (!actor.isOwner && !game.user.isGM) { ui.notifications.warn(game.i18n.localize("SCP2E.Attack.NoOwner")); return; }
+
   try { await confirmDamage(actor, payload); }
   catch (err) { console.error("SCP2e | damage failed:", err); ui.notifications.error("SCP2e: damage roll failed (see console)."); }
 }
 
-function bindDamageButtons(root) {
-  if (!root?.querySelectorAll) return;
-  for (const b of root.querySelectorAll(".scp2e-damage-btn")) {
-    if (b.dataset.bound) continue;
-    b.dataset.bound = "1";
-    b.addEventListener("click", onDamageClick);
-  }
-}
-
-// v13+ passes an HTMLElement; older cores pass jQuery. Handle both, once each.
-Hooks.on("renderChatMessageHTML", (message, html) => bindDamageButtons(html instanceof HTMLElement ? html : html?.[0]));
-Hooks.on("renderChatMessage", (message, html) => bindDamageButtons(html?.[0] ?? (html instanceof HTMLElement ? html : null)));
+// One delegated listener catches clicks on any current/future damage button.
+document.addEventListener("click", (event) => {
+  const btn = event.target?.closest?.(".scp2e-damage-btn");
+  if (!btn) return;
+  event.preventDefault();
+  handleDamageButton(btn);
+});

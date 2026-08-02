@@ -12,6 +12,7 @@
  * no pass/fail, no critical labels.
  */
 import { ATTRIBUTES, SKILLS } from "./config.js";
+import { applyChatRollMode } from "./const.js";
 
 const POOL_FACES = [6, 8, 10, 12];           // editable pool dice
 const ORDER = [6, 8, 10, 12, 20];            // ascending so explosions cascade in one pass
@@ -44,7 +45,8 @@ export async function rollPool(actor, data, attrKey, {
   rollMode = null,
   title = null,
   notes = [],
-  cardButton = ""
+  cardButton = "",
+  messageFlags = null
 } = {}) {
   const attr = data.attributes?.[attrKey] ?? {};
   const pool = attr.dice ?? {};
@@ -156,7 +158,8 @@ export async function rollPool(actor, data, attrKey, {
     rolls,
     sound: CONFIG.sounds.dice
   };
-  ChatMessage.applyRollMode(messageData, rollMode || game.settings.get("core", "rollMode"));
+  if (messageFlags) messageData.flags = foundry.utils.mergeObject(messageData.flags ?? {}, messageFlags);
+  applyChatRollMode(messageData, rollMode);
   await ChatMessage.create(messageData);
 
   return { total, kept: ranked.slice(0, 2).map((d) => d.value), skillContribution, flatSum };
