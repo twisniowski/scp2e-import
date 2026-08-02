@@ -6,9 +6,10 @@
  * 10 -> +1d12, 12 -> +1d20). Bonus dice can themselves explode the same way. The
  * only die that does NOT explode is the d20.
  *
- * All rolled dice are candidates; the highest two are summed. For a skill roll,
- * the skill's value is added to that sum. The chat card reports the result only —
- * no difficulty comparison, no pass/fail, no critical labels.
+ * All rolled dice are candidates; the highest two are summed. A skill value (and
+ * any flat modifiers — to-hit, aim, recoil, range, weapon parameters) are added
+ * to that sum. The chat card reports the result only — no difficulty comparison,
+ * no pass/fail, no critical labels.
  */
 import { ATTRIBUTES, SKILLS } from "./config.js";
 
@@ -17,20 +18,42 @@ const ORDER = [6, 8, 10, 12, 20];            // ascending so explosions cascade 
 const NEXT_FACE = { 6: 8, 8: 10, 10: 12, 12: 20, 20: null };
 
 /**
- * Roll an attribute pool (optionally as a skill check).
+ * Roll an attribute pool (optionally as a skill check), with optional flat
+ * modifiers, bonus pool dice (e.g. an Exertion d12) and a chat roll mode.
+ *
  * @param {Actor}  actor
  * @param {object} data       Normalised SCP flag data.
  * @param {string} attrKey    Attribute key to roll.
  * @param {object} [opts]
- * @param {string|null} [opts.skillKey]  If set, add this skill's value to the result.
+ * @param {string|null}  [opts.skillKey]      PC skill key; adds skills[key].value * mult.
+ * @param {number|null}  [opts.skillValue]    Pre-computed flat skill contribution (NPCs).
+ * @param {string|null}  [opts.skillLabel]    Display label used with skillValue.
+ * @param {Array<{label:string,value:number}>} [opts.flatMods]  Flat modifiers added to the total.
+ * @param {object|null}  [opts.bonusPool]     Extra pool dice, e.g. { d12: 1 } for Exertion.
+ * @param {string|null}  [opts.bonusLabel]    Label describing the bonus pool (shown in the card).
+ * @param {string|null}  [opts.rollMode]      "publicroll" | "gmroll" | "blindroll" | "selfroll".
+ * @param {string|null}  [opts.title]         Flavor override.
  */
-export async function rollPool(actor, data, attrKey, { skillKey = null } = {}) {
+export async function rollPool(actor, data, attrKey, {
+  skillKey = null,
+  skillValue = null,
+  skillLabel = null,
+  flatMods = [],
+  bonusPool = null,
+  bonusLabel = null,
+  rollMode = null,
+  title = null
+} = {}) {
   const attr = data.attributes?.[attrKey] ?? {};
   const pool = attr.dice ?? {};
 
   // Base pool counts (d20 always starts at 0; it only appears via explosions).
   const base = { 6: 0, 8: 0, 10: 0, 12: 0, 20: 0 };
   for (const f of POOL_FACES) base[f] = Math.max(0, Number(pool[`d${f}`] ?? 0));
+
+  // Fold in any bonus pool dice (e.g. Exertion adds one d12).
+  if (bonusPool) for (const f of POOL_FACES) base[f] += Math.max(0, Number(bonusPool[`d${f}`] ?? 0));
+
   if (!POOL_FACES.some((f) => base[f] > 0)) {
     ui.notifications.warn(
       game.i18n.format("SCP2E.Roll.NoDice", { attr: game.i18n.localize(ATTRIBUTES[attrKey].label) })
@@ -69,50 +92,65 @@ export async function rollPool(actor, data, attrKey, { skillKey = null } = {}) {
   const keptIdx = new Set(ranked.slice(0, 2).map((d) => d.i));
   const keptSum = ranked.slice(0, 2).reduce((s, d) => s + d.value, 0);
 
-  // Add skill value for a skill roll.
-  let skillVal = 0;
-  let skillMult = 1;
+  // Skill contribution: PC skill (key) or a pre-computed flat value (NPC).
   let skillContribution = 0;
-  let skillLabel = null;
+  let flavorSkill = null;
+  let skillLine = "";
   if (skillKey) {
-    skillVal = Number(data.skills?.[skillKey]?.value ?? 0);
-    skillMult = Math.max(1, Number(data.skills?.[skillKey]?.mult ?? 1));
-    skillContribution = skillVal * skillMult;
-    skillLabel = game.i18n.localize(SKILLS[skillKey].label);
+    const sv = Number(data.skills?.[skillKey]?.value ?? 0);
+    const sm = Math.max(1, Number(data.skills?.[skillKey]?.mult ?? 1));
+    skillContribution = sv * sm;
+    flavorSkill = game.i18n.localize(SKILLS[skillKey].label);
+    const term = sm > 1 ? `${sv}×${sm} = ${skillContribution}` : `${sv}`;
+    skillLine = `<div class="scp-roll-line">Top two ${keptSum} + ${flavorSkill} ${term}</div>`;
+  } else if (skillValue != null) {
+    skillContribution = Number(skillValue) || 0;
+    flavorSkill = skillLabel;
+    skillLine = `<div class="scp-roll-line">Top two ${keptSum} + ${skillLabel ?? "Skill"} ${skillContribution}</div>`;
   }
-  const total = keptSum + skillContribution;
+
+  // Flat modifiers (to-hit, aim, recoil, range, parameters, …).
+  const mods = (flatMods ?? []).filter((m) => Number(m.value) !== 0 || m.always);
+  const flatSum = mods.reduce((s, m) => s + (Number(m.value) || 0), 0);
+  const modLine = mods.length
+    ? `<div class="scp-roll-line">Modifiers: ${mods
+        .map((m) => `${m.label} ${(Number(m.value) || 0) >= 0 ? "+" : ""}${Number(m.value) || 0}`)
+        .join(", ")}</div>`
+    : "";
+
+  const total = keptSum + skillContribution + flatSum;
 
   // Build the chat card.
   const attrLabel = game.i18n.localize(ATTRIBUTES[attrKey].label);
   const poolDesc = POOL_FACES.filter((f) => base[f] > 0).map((f) => `${base[f]}d${f}`).join(", ");
+  const bonusNote = bonusLabel ? ` <span class="scp-roll-bonus">(+${bonusLabel})</span>` : "";
   const diceHtml = dice.map((dd, i) => {
     const cls = ["scp-die", keptIdx.has(i) ? "kept" : "", dd.bonus ? "boom" : ""].filter(Boolean).join(" ");
     const mark = dd.exploded ? " ⚡" : "";
     return `<span class="${cls}">d${dd.faces}:${dd.value}${mark}</span>`;
   }).join(" ");
 
-  const flavor = skillLabel ? `${attrLabel} + ${skillLabel}` : attrLabel;
-  const skillTerm = skillMult > 1 ? `${skillVal}\u00d7${skillMult} = ${skillContribution}` : `${skillVal}`;
-  const skillLine = skillLabel
-    ? `<div class="scp-roll-line">Top two ${keptSum} + ${skillLabel} ${skillTerm}</div>`
-    : "";
+  const flavor = title || (flavorSkill ? `${attrLabel} + ${flavorSkill}` : attrLabel);
 
   const content = `
     <div class="scp2e-roll">
       <div class="scp-roll-head">${flavor}</div>
-      <div class="scp-roll-pool">Pool: ${poolDesc}</div>
+      <div class="scp-roll-pool">Pool: ${poolDesc}${bonusNote}</div>
       <div class="scp-roll-dice">${diceHtml}</div>
       ${skillLine}
+      ${modLine}
       <div class="scp-roll-total">Result: <strong>${total}</strong></div>
     </div>`;
 
-  await ChatMessage.create({
+  const messageData = {
     speaker: ChatMessage.getSpeaker({ actor }),
     flavor,
     content,
     rolls,
     sound: CONFIG.sounds.dice
-  });
+  };
+  ChatMessage.applyRollMode(messageData, rollMode || game.settings.get("core", "rollMode"));
+  await ChatMessage.create(messageData);
 
-  return { total, kept: ranked.slice(0, 2).map((d) => d.value), skillVal };
+  return { total, kept: ranked.slice(0, 2).map((d) => d.value), skillContribution, flatSum };
 }

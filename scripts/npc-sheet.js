@@ -6,7 +6,7 @@
  */
 import { ATTRIBUTES } from "./config.js";
 import { normalizeData, EMPTY_ROWS } from "./data-model.js";
-import { rollPool } from "./roll.js";
+import { promptRoll, useWeapon } from "./combat.js";
 import { MODULE_ID, FLAG_KEY, ensureHpBar } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -24,7 +24,8 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       editImage: SCP2eNpcSheet.#onEditImage,
       rollAttribute: SCP2eNpcSheet.#onRollAttribute,
       addWeapon: SCP2eNpcSheet.#onAddRow,
-      deleteWeapon: SCP2eNpcSheet.#onDeleteRow
+      deleteWeapon: SCP2eNpcSheet.#onDeleteRow,
+      useWeapon: SCP2eNpcSheet.#onUseWeapon
     }
   };
 
@@ -92,10 +93,20 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   static async #onRollAttribute(event, target) {
     try {
-      await rollPool(this.actor, this.scpData, target.dataset.attr);
+      await promptRoll(this.actor, this.scpData, target.dataset.attr);
     } catch (err) {
       console.error("SCP2e | NPC roll failed:", err);
       ui.notifications.error("SCP2e: roll failed (see console).");
+    }
+  }
+
+  /** Open the attack dialog for a weapon row (NPC: Per/Dex pool + Physical skill). */
+  static async #onUseWeapon(event, target) {
+    try {
+      await useWeapon(this.actor, this.scpData, Number(target.dataset.index), { isNpc: true });
+    } catch (err) {
+      console.error("SCP2e | NPC attack failed:", err);
+      ui.notifications.error("SCP2e: attack failed (see console).");
     }
   }
 

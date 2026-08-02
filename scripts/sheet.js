@@ -8,7 +8,7 @@
 import { ATTRIBUTES, SKILLS, DISRUPTION_CLASSES, DEPARTMENTS } from "./config.js";
 import { normalizeData, computeSkillCaps, EMPTY_ROWS } from "./data-model.js";
 import { promptPdfImport } from "./pdf-import.js";
-import { rollPool } from "./roll.js";
+import { promptRoll, useWeapon } from "./combat.js";
 import { MODULE_ID, FLAG_KEY, ensureHpBar } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -29,6 +29,7 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       changeTab: SCP2eCharacterSheet.#onChangeTab,
       addWeapon: SCP2eCharacterSheet.#onAddRow,
       deleteWeapon: SCP2eCharacterSheet.#onDeleteRow,
+      useWeapon: SCP2eCharacterSheet.#onUseWeapon,
       addAspect: SCP2eCharacterSheet.#onAddRow,
       deleteAspect: SCP2eCharacterSheet.#onDeleteRow,
       addCustomSkill: SCP2eCharacterSheet.#onAddRow,
@@ -179,25 +180,35 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     }
   }
 
-  /** Roll an attribute's dice pool (top two summed). */
+  /** Roll an attribute's dice pool (top two summed), via the roll-options popup. */
   static async #onRollAttribute(event, target) {
     try {
-      await rollPool(this.actor, this.scpData, target.dataset.attr);
+      await promptRoll(this.actor, this.scpData, target.dataset.attr);
     } catch (err) {
       console.error("SCP2e | attribute roll failed:", err);
       ui.notifications.error("SCP2e: roll failed (see console).");
     }
   }
 
-  /** Roll a skill: governing attribute pool (top two) + skill value. */
+  /** Roll a skill: governing attribute pool (top two) + skill value, via the popup. */
   static async #onRollSkill(event, target) {
     try {
       const skillKey = target.dataset.skill;
       const govKey = SKILLS[skillKey]?.gov;
-      await rollPool(this.actor, this.scpData, govKey, { skillKey });
+      await promptRoll(this.actor, this.scpData, govKey, { skillKey });
     } catch (err) {
       console.error("SCP2e | skill roll failed:", err);
       ui.notifications.error("SCP2e: roll failed (see console).");
+    }
+  }
+
+  /** Open the attack dialog for a weapon row. */
+  static async #onUseWeapon(event, target) {
+    try {
+      await useWeapon(this.actor, this.scpData, Number(target.dataset.index), { isNpc: false });
+    } catch (err) {
+      console.error("SCP2e | attack failed:", err);
+      ui.notifications.error("SCP2e: attack failed (see console).");
     }
   }
 

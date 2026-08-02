@@ -32,7 +32,7 @@ export function getDefaultData() {
     health: { hp: 0, maxHp: 0, baseHp: 0, dr: 0, hthMult: "" },
     combat: { baseSpeed: 0, speed: "", combat: "", projectile: "", reaction: "", stagger: "" },
     tracks: { exertion: 0, exertionTotal: 0, reverence: 0 },
-    weapons: [],                 // [{ name, toHit, aim, recoil, bDam, xDam, mag, range, mass, note }]
+    weapons: [],                 // [{ name, toHit, aim, recoil, bDam, xDam, mag, range, mass, params, note }]
     aspects: [],                 // [{ name, type, cost, page }]
     uniforms: {
       aStyle: "", aSus: "", bStyle: "", bSus: "",
@@ -73,7 +73,7 @@ export function computeSkillCaps(data) {
 
 /** Empty rows for the three editable tables. */
 export const EMPTY_ROWS = {
-  weapons: { name: "", toHit: "", aim: "", recoil: "", bDam: "", xDam: "", mag: "", range: "", mass: "", note: "" },
+  weapons: { name: "", toHit: "", aim: "", recoil: "", bDam: "", xDam: "", mag: "", range: "", mass: "", params: "", note: "" },
   aspects: { name: "", type: "power", cost: "", page: "" },
   customSkills: { name: "", gov: "", value: 0 },
   everydayCarry: { name: "", qty: "" },
