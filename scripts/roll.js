@@ -42,7 +42,8 @@ export async function rollPool(actor, data, attrKey, {
   bonusPool = null,
   bonusLabel = null,
   rollMode = null,
-  title = null
+  title = null,
+  notes = []
 } = {}) {
   const attr = data.attributes?.[attrKey] ?? {};
   const pool = attr.dice ?? {};
@@ -131,6 +132,9 @@ export async function rollPool(actor, data, attrKey, {
   }).join(" ");
 
   const flavor = title || (flavorSkill ? `${attrLabel} + ${flavorSkill}` : attrLabel);
+  const noteLine = (notes ?? []).length
+    ? `<div class="scp-roll-line scp-roll-notes">${notes.map((n) => `• ${n}`).join("<br>")}</div>`
+    : "";
 
   const content = `
     <div class="scp2e-roll">
@@ -140,6 +144,7 @@ export async function rollPool(actor, data, attrKey, {
       ${skillLine}
       ${modLine}
       <div class="scp-roll-total">Result: <strong>${total}</strong></div>
+      ${noteLine}
     </div>`;
 
   const messageData = {
