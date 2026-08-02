@@ -9,13 +9,27 @@ export const FLAG_PREFIX = `flags.${MODULE_ID}.${FLAG_KEY}`;
 export const HP_BAR = `${FLAG_PREFIX}.health.hp`;
 
 /**
- * Apply a chat roll mode across Foundry versions. v14 renamed
- * ChatMessage.applyRollMode -> ChatMessage.applyMode.
+ * Apply a chat roll mode (public / GM-only / blind / self) by setting whisper
+ * recipients directly. Avoids ChatMessage.applyRollMode/applyMode, whose name
+ * and signature have changed across Foundry versions.
  */
 export function applyChatRollMode(messageData, rollMode) {
   const mode = rollMode || game.settings.get("core", "rollMode");
-  if (typeof ChatMessage.applyMode === "function") ChatMessage.applyMode(messageData, mode);
-  else if (typeof ChatMessage.applyRollMode === "function") ChatMessage.applyRollMode(messageData, mode);
+  const gmIds = () => ChatMessage.getWhisperRecipients("GM").map((u) => u.id);
+  switch (mode) {
+    case "gmroll":
+      messageData.whisper = gmIds();
+      break;
+    case "blindroll":
+      messageData.whisper = gmIds();
+      messageData.blind = true;
+      break;
+    case "selfroll":
+      messageData.whisper = [game.user.id];
+      break;
+    default: // publicroll — visible to everyone
+      break;
+  }
   return messageData;
 }
 
