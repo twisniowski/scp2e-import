@@ -6,7 +6,7 @@
  */
 import { ATTRIBUTES } from "./config.js";
 import { normalizeData, EMPTY_ROWS } from "./data-model.js";
-import { promptRoll, useWeapon } from "./combat.js";
+import { promptRoll, useWeapon, addWeaponParam, removeWeaponParam, paramTagsFor } from "./combat.js";
 import { MODULE_ID, FLAG_KEY, ensureHpBar } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -25,7 +25,9 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       rollAttribute: SCP2eNpcSheet.#onRollAttribute,
       addWeapon: SCP2eNpcSheet.#onAddRow,
       deleteWeapon: SCP2eNpcSheet.#onDeleteRow,
-      useWeapon: SCP2eNpcSheet.#onUseWeapon
+      useWeapon: SCP2eNpcSheet.#onUseWeapon,
+      addParam: SCP2eNpcSheet.#onAddParam,
+      removeParam: SCP2eNpcSheet.#onRemoveParam
     }
   };
 
@@ -57,7 +59,7 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       [A("intellect"), A("willpower")],
       [A("charisma"), A("fate")]
     ];
-    context.weapons = data.weapons ?? [];
+    context.weapons = (data.weapons ?? []).map((w) => ({ ...w, paramTags: paramTagsFor(w.params) }));
     return context;
   }
 
@@ -107,6 +109,26 @@ export class SCP2eNpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     } catch (err) {
       console.error("SCP2e | NPC attack failed:", err);
       ui.notifications.error("SCP2e: attack failed (see console).");
+    }
+  }
+
+  /** Open the tag picker to add a weapon parameter. */
+  static async #onAddParam(event, target) {
+    try {
+      await addWeaponParam(this.actor, this.scpData, Number(target.dataset.index));
+    } catch (err) {
+      console.error("SCP2e | NPC add param failed:", err);
+      ui.notifications.error("SCP2e: could not add parameter (see console).");
+    }
+  }
+
+  /** Remove a weapon parameter tag. */
+  static async #onRemoveParam(event, target) {
+    try {
+      await removeWeaponParam(this.actor, this.scpData, Number(target.dataset.index), target.dataset.key);
+    } catch (err) {
+      console.error("SCP2e | NPC remove param failed:", err);
+      ui.notifications.error("SCP2e: could not remove parameter (see console).");
     }
   }
 

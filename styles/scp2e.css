@@ -249,3 +249,31 @@ table.wslots input { width: 100%; border: none; background: transparent; }
 .scp2e-attackdlg .scp2e-check { display: block; margin: 2px 0; }
 .scp2e-attack-keywords { font-size: 0.82em; opacity: 0.9; margin-top: 6px; border-top: 1px solid rgba(0,0,0,0.15); padding-top: 4px; }
 .scp-roll-notes { font-size: 0.85em; opacity: 0.85; margin-top: 4px; }
+
+/* --- Narrow "use" column --- */
+.scp2e .weapons th:first-child,
+.scp2e .weapons td.use-col,
+.scp2e-npc .weapons th:first-child,
+.scp2e-npc .weapons td.use-col { width: 30px; min-width: 30px; padding: 0 2px; text-align: center; }
+.scp2e .weapons .use-weapon,
+.scp2e-npc .weapons .use-weapon { padding: 2px 4px; }
+
+/* --- Params as tag chips --- */
+.scp2e .weapons td.params-cell,
+.scp2e-npc .weapons td.params-cell { white-space: normal; }
+.param-tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: #2e2e33; color: #fff; border: 1px solid #555;
+  border-radius: 10px; padding: 1px 6px; margin: 1px; font-size: 0.8em; line-height: 1.4;
+}
+.param-tag.unknown { background: #5a3a1a; border-color: #8a5a2a; }
+.param-tag .param-del {
+  background: none; border: none; color: #ffb3b3; cursor: pointer;
+  padding: 0; margin: 0; font-size: 1.1em; line-height: 1;
+}
+.param-tag .param-del:hover { color: #ff5252; }
+.param-add {
+  background: #333; color: #fff; border: 1px dashed #777; border-radius: 10px;
+  cursor: pointer; padding: 1px 6px; margin: 1px; font-size: 0.8em; line-height: 1.4;
+}
+.param-add:hover { background: #444; }

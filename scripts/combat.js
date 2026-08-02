@@ -63,6 +63,29 @@ const PARAM_ALIASES = {
 
 const DIE_ORDER = [4, 6, 8, 10, 12, 20];
 
+/**
+ * The pickable weapon keywords, with display labels, grouped by weapon family.
+ * `key` is the canonical value stored in weapon.params (matches WEAPON_PARAMS).
+ */
+export const PARAM_CHOICES = [
+  { key: "shotgun", label: "Shotgun", group: "firearms" },
+  { key: "sniper", label: "Sniper", group: "firearms" },
+  { key: "aim+", label: "Aim+", group: "firearms" },
+  { key: "automatic", label: "Automatic", group: "firearms" },
+  { key: "3-r burst", label: "3-R Burst", group: "firearms" },
+  { key: "lightweight", label: "Lightweight", group: "firearms" },
+  { key: "silencer", label: "Silencer", group: "firearms" },
+  { key: "assassin", label: "Assassin", group: "melee" },
+  { key: "bonecrushing", label: "Bonecrushing", group: "melee" },
+  { key: "compartment", label: "Compartment", group: "melee" },
+  { key: "disguised", label: "Disguised", group: "melee" },
+  { key: "lashing", label: "Lashing", group: "melee" },
+  { key: "mechanized retraction", label: "Mechanized Retraction", group: "melee" },
+  { key: "oversized", label: "Oversized", group: "melee" },
+  { key: "throwing wep", label: "Throwing Wep.", group: "melee" }
+];
+const PARAM_LABELS = Object.fromEntries(PARAM_CHOICES.map((c) => [c.key, c.label]));
+
 /** Parse a free-text integer (handles "+2", "-1", "6 m", ""). */
 function num(v) {
   const n = parseInt(String(v ?? "").replace(/[^0-9+\-]/g, ""), 10);
@@ -114,6 +137,70 @@ function aggregateParams(keys) {
 }
 
 const esc = (s) => Handlebars.escapeExpression(String(s ?? ""));
+
+/** Turn a stored params string into display tags: [{ key, label, known }]. */
+export function paramTagsFor(str) {
+  return parseParams(str).map((key) => ({ key, label: PARAM_LABELS[key] ?? key, known: key in WEAPON_PARAMS }));
+}
+
+/** Overwrite a single field on one weapon row and persist the weapons array. */
+async function setWeaponField(actor, data, index, fieldName, value) {
+  const rows = foundry.utils.deepClone(data.weapons ?? []);
+  if (!rows[index]) return;
+  rows[index][fieldName] = value;
+  await actor.setFlag(MODULE_ID, `${FLAG_KEY}.weapons`, rows);
+}
+
+/** Open the tag picker and add the chosen keyword to a weapon (no free text). */
+export async function addWeaponParam(actor, data, weaponIndex) {
+  const weapon = (data.weapons ?? [])[weaponIndex];
+  if (!weapon) return;
+  const existing = new Set(parseParams(weapon.params));
+  const available = PARAM_CHOICES.filter((c) => !existing.has(c.key));
+  if (!available.length) {
+    ui.notifications.info(game.i18n.localize("SCP2E.Param.AllAdded"));
+    return;
+  }
+
+  const optGroup = (grp, lbl) => {
+    const opts = available.filter((c) => c.group === grp).map((c) => `<option value="${c.key}">${esc(c.label)}</option>`).join("");
+    return opts ? `<optgroup label="${lbl}">${opts}</optgroup>` : "";
+  };
+  const content = `
+    <form class="scp2e-paramdlg">
+      <div class="form-group">
+        <label>${game.i18n.localize("SCP2E.Param.Choose")}</label>
+        <select name="paramKey">
+          ${optGroup("firearms", game.i18n.localize("SCP2E.Param.Firearms"))}
+          ${optGroup("melee", game.i18n.localize("SCP2E.Param.Melee"))}
+        </select>
+      </div>
+    </form>`;
+
+  const D = DialogV2();
+  const key = await D.wait({
+    window: { title: game.i18n.localize("SCP2E.Param.Title"), icon: "fa-solid fa-tag" },
+    content,
+    buttons: [
+      { action: "add", label: game.i18n.localize("SCP2E.Param.Add"), default: true,
+        callback: (event, button, dialog) => field(dialog, "paramKey") },
+      { action: "cancel", label: game.i18n.localize("SCP2E.Cancel"), callback: () => null }
+    ],
+    rejectClose: false
+  });
+  if (!key) return;
+
+  const next = [...new Set([...parseParams(weapon.params), key])];
+  await setWeaponField(actor, data, weaponIndex, "params", next.join(", "));
+}
+
+/** Remove a keyword tag from a weapon. */
+export async function removeWeaponParam(actor, data, weaponIndex, key) {
+  const weapon = (data.weapons ?? [])[weaponIndex];
+  if (!weapon) return;
+  const next = parseParams(weapon.params).filter((k) => k !== key);
+  await setWeaponField(actor, data, weaponIndex, "params", next.join(", "));
+}
 
 /* -------------------------------------------------------------------------- */
 /*  Exertion                                                                  */

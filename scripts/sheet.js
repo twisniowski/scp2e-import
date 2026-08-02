@@ -8,7 +8,7 @@
 import { ATTRIBUTES, SKILLS, DISRUPTION_CLASSES, DEPARTMENTS } from "./config.js";
 import { normalizeData, computeSkillCaps, EMPTY_ROWS } from "./data-model.js";
 import { promptPdfImport } from "./pdf-import.js";
-import { promptRoll, useWeapon } from "./combat.js";
+import { promptRoll, useWeapon, addWeaponParam, removeWeaponParam, paramTagsFor } from "./combat.js";
 import { MODULE_ID, FLAG_KEY, ensureHpBar } from "./const.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -30,6 +30,8 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       addWeapon: SCP2eCharacterSheet.#onAddRow,
       deleteWeapon: SCP2eCharacterSheet.#onDeleteRow,
       useWeapon: SCP2eCharacterSheet.#onUseWeapon,
+      addParam: SCP2eCharacterSheet.#onAddParam,
+      removeParam: SCP2eCharacterSheet.#onRemoveParam,
       addAspect: SCP2eCharacterSheet.#onAddRow,
       deleteAspect: SCP2eCharacterSheet.#onDeleteRow,
       addCustomSkill: SCP2eCharacterSheet.#onAddRow,
@@ -86,6 +88,9 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     }));
     context.crucialSkills = context.skills.filter((s) => s.crucial);
     context.standardSkills = context.skills.filter((s) => !s.crucial);
+
+    // Weapons enriched with display tags for the params picker.
+    context.weapons = (data.weapons ?? []).map((w) => ({ ...w, paramTags: paramTagsFor(w.params) }));
 
     context.disruptionClasses = DISRUPTION_CLASSES;
     context.departments = DEPARTMENTS.map((dep) => ({ key: dep, value: data.departments[dep] ?? 0 }));
@@ -209,6 +214,26 @@ export class SCP2eCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     } catch (err) {
       console.error("SCP2e | attack failed:", err);
       ui.notifications.error("SCP2e: attack failed (see console).");
+    }
+  }
+
+  /** Open the tag picker to add a weapon parameter. */
+  static async #onAddParam(event, target) {
+    try {
+      await addWeaponParam(this.actor, this.scpData, Number(target.dataset.index));
+    } catch (err) {
+      console.error("SCP2e | add param failed:", err);
+      ui.notifications.error("SCP2e: could not add parameter (see console).");
+    }
+  }
+
+  /** Remove a weapon parameter tag. */
+  static async #onRemoveParam(event, target) {
+    try {
+      await removeWeaponParam(this.actor, this.scpData, Number(target.dataset.index), target.dataset.key);
+    } catch (err) {
+      console.error("SCP2e | remove param failed:", err);
+      ui.notifications.error("SCP2e: could not remove parameter (see console).");
     }
   }
 

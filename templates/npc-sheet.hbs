@@ -88,7 +88,7 @@
     <tbody>
     {{#each weapons as |w i|}}
       <tr>
-        <td><button type="button" class="use-weapon" data-action="useWeapon" data-index="{{i}}" title="{{localize 'SCP2E.Weapons.Use'}}"><i class="fa-solid fa-crosshairs"></i></button></td>
+        <td class="use-col"><button type="button" class="use-weapon" data-action="useWeapon" data-index="{{i}}" title="{{localize 'SCP2E.Weapons.Use'}}"><i class="fa-solid fa-crosshairs"></i></button></td>
         <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.name" value="{{w.name}}"/></td>
         <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.toHit" value="{{w.toHit}}"/></td>
         <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.aim" value="{{w.aim}}"/></td>
@@ -98,7 +98,11 @@
         <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.mag" value="{{w.mag}}"/></td>
         <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.range" value="{{w.range}}"/></td>
         <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.mass" value="{{w.mass}}"/></td>
-        <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.params" value="{{w.params}}"/></td>
+        <td class="params-cell">
+          {{#each w.paramTags as |t|}}<span class="param-tag{{#unless t.known}} unknown{{/unless}}">{{t.label}}<button type="button" class="param-del" data-action="removeParam" data-index="{{i}}" data-key="{{t.key}}" title="{{localize 'SCP2E.Param.Remove'}}">&times;</button></span>{{/each}}
+          <button type="button" class="param-add" data-action="addParam" data-index="{{i}}" title="{{localize 'SCP2E.Param.Add'}}"><i class="fa-solid fa-plus"></i></button>
+          <input type="hidden" name="flags.scp2e-character-sheet.data.weapons.{{i}}.params" value="{{w.params}}"/>
+        </td>
         <td><input type="text" name="flags.scp2e-character-sheet.data.weapons.{{i}}.note" value="{{w.note}}"/></td>
         <td><button type="button" class="del-row" data-action="deleteWeapon" data-array="weapons" data-index="{{i}}"><i class="fa-solid fa-trash"></i></button></td>
       </tr>
