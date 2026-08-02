@@ -188,7 +188,9 @@ export async function addWeaponParam(actor, data, weaponIndex) {
     ],
     rejectClose: false
   });
-  if (!key) return;
+  // DialogV2 coalesces a null callback result to the button's action name, so
+  // Cancel yields "cancel". Only accept a real, known keyword key.
+  if (!key || !PARAM_LABELS[key]) return;
 
   const next = [...new Set([...parseParams(weapon.params), key])];
   await setWeaponField(actor, data, weaponIndex, "params", next.join(", "));
@@ -263,7 +265,8 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
     ],
     rejectClose: false
   });
-  if (!result) return null;
+  // Cancel/close resolves to a non-object (action name or undefined) — bail then.
+  if (!result || typeof result !== "object") return null;
 
   let bonusPool = null;
   let bonusLabel = null;
@@ -413,7 +416,8 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     ],
     rejectClose: false
   });
-  if (!choice) return;
+  // Cancel/close resolves to a non-object (action name or undefined) — bail then.
+  if (!choice || typeof choice !== "object") return;
 
   const ranged = choice.attackType === "ranged";
 
