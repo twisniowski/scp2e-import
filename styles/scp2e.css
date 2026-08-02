@@ -281,3 +281,12 @@ table.wslots input { width: 100%; border: none; background: transparent; }
 /* Attack dialog: one checkbox per line, left-aligned full width */
 .scp2e-attackdlg .scp2e-check-row { justify-content: flex-start; }
 .scp2e-attackdlg .scp2e-check-row > label { flex: 1 1 auto; }
+
+/* Confirm-hit → roll damage button on the to-hit chat card */
+.scp2e-roll .scp2e-damage-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+  background: #4a0d0d; color: #fff; border: 1px solid #85000b; border-radius: 4px;
+  padding: 3px 10px; cursor: pointer; font-size: 0.9em;
+}
+.scp2e-roll .scp2e-damage-btn:hover { background: #85000b; }
+.scp-die.boom { font-weight: 700; }

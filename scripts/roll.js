@@ -43,7 +43,8 @@ export async function rollPool(actor, data, attrKey, {
   bonusLabel = null,
   rollMode = null,
   title = null,
-  notes = []
+  notes = [],
+  cardButton = ""
 } = {}) {
   const attr = data.attributes?.[attrKey] ?? {};
   const pool = attr.dice ?? {};
@@ -145,6 +146,7 @@ export async function rollPool(actor, data, attrKey, {
       ${modLine}
       <div class="scp-roll-total">Result: <strong>${total}</strong></div>
       ${noteLine}
+      ${cardButton || ""}
     </div>`;
 
   const messageData = {

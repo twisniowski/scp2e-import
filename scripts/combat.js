@@ -1,37 +1,26 @@
 /**
  * SCP 2e combat automation.
  *
- * Provides:
- *   - promptRoll():  a small pre-roll popup (public / GM-only + use-exertion) that
- *                    wraps every attribute and skill test.
- *   - useWeapon():   the weapon "Use" button — an attack dialog (attack type, skill,
- *                    distance, aim / recoil / exertion, visibility) that resolves a
- *                    to-hit roll and a damage roll, honouring weapon keywords.
+ *   - promptRoll():   pre-roll popup (visibility + exertion dice) for every
+ *                     attribute / skill test.
+ *   - useWeapon():    the weapon "Use" button — an attack dialog resolving the
+ *                     to-hit roll, honouring weapon keywords. The result card
+ *                     carries a "Confirm hit — roll damage" button.
+ *   - confirmDamage(): triggered by that button; optionally spends Exertion to
+ *                     boost Combat/Projectile rating, then rolls damage (dice shown).
  *
- * All numeric weapon fields are stored as free text, so everything is parsed
- * defensively.
+ * Exertion (rulebook p59): 1 point = +1D12 on an Attribute roll (multiple
+ * allowed); 1 point = +1 Combat/Projectile rating for an attack.
  */
 import { SKILLS } from "./config.js";
 import { rollPool } from "./roll.js";
+import { normalizeData } from "./data-model.js";
 import { MODULE_ID, FLAG_KEY } from "./const.js";
 
 /* -------------------------------------------------------------------------- */
 /*  Weapon keyword ("Special") effects — SCP 2e rulebook p151/p153            */
-/*                                                                            */
-/*  Effect fields understood by the attack resolver:                          */
-/*   aimMax               max number of Aim actions allowed (default 1)        */
-/*   rangeMode "bonus"    range increments ADD to To-Hit (shotgun) instead of  */
-/*                        subtracting                                          */
-/*   damageDicePerIncrement  dice added(+)/removed(-) per range increment      */
-/*   staggerToggle        offer a "target Staggered" toggle; +1 die type dmg   */
-/*   damageDoubleMax      damage dice rolling their max are doubled (Lashing)   */
-/*   thrown               use higher of Combat/Projectile; ignore negative     */
-/*                        To-Hit (Throwing Weapons)                            */
-/*   reminder             text shown on the card (rule the tool can't auto-    */
-/*                        apply, e.g. success-margin effects)                  */
 /* -------------------------------------------------------------------------- */
 export const WEAPON_PARAMS = {
-  // --- Firearms ---
   "shotgun":     { rangeMode: "bonus", damageDicePerIncrement: -1,
                    note: "Shotgun: range increments ADD to To-Hit and remove one damage die each." },
   "sniper":      { aimMax: 3, note: "Sniper: may Aim up to 3× (requires prep; two-handed)." },
@@ -40,7 +29,6 @@ export const WEAPON_PARAMS = {
   "3-r burst":   { reminder: "3-R Burst: if the To-Hit succeeds by 3+, add +2 Base Damage dice (apply manually)." },
   "lightweight": { reminder: "Lightweight: −1 Draw Action (no attack effect)." },
   "silencer":    { reminder: "Silencer: suppressed — no combat modifier." },
-  // --- Melee ---
   "assassin":     { staggerToggle: true, note: "Assassin: vs a Staggered target, +1 die type to all damage dice." },
   "lashing":      { damageDoubleMax: true, note: "Lashing: damage dice that roll their max are doubled." },
   "bonecrushing": { reminder: "Bonecrushing: a Critical Hit Staggers the target (apply manually)." },
@@ -51,22 +39,18 @@ export const WEAPON_PARAMS = {
   "throwing wep": { thrown: true, note: "Thrown: uses the higher of Combat/Projectile; ignores a negative To-Hit." }
 };
 
-/** Spelling variants that map onto a canonical keyword key. */
 const PARAM_ALIASES = {
   "3 round burst": "3-r burst", "3-round burst": "3-r burst", "3r burst": "3-r burst",
   "three round burst": "3-r burst", "burst": "3-r burst", "burst fire": "3-r burst",
   "aimplus": "aim+", "aim +": "aim+",
-  "suppressed": "silencer", "suppressor": "silenced", "silenced": "silencer",
+  "suppressed": "silencer", "suppressor": "silencer", "silenced": "silencer",
   "throwing": "throwing wep", "throwing weapon": "throwing wep", "throwing weapons": "throwing wep",
   "throwing wep.": "throwing wep", "throwable": "throwing wep"
 };
 
 const DIE_ORDER = [4, 6, 8, 10, 12, 20];
 
-/**
- * The pickable weapon keywords, with display labels, grouped by weapon family.
- * `key` is the canonical value stored in weapon.params (matches WEAPON_PARAMS).
- */
+/** Pickable weapon keywords with display labels, grouped by weapon family. */
 export const PARAM_CHOICES = [
   { key: "shotgun", label: "Shotgun", group: "firearms" },
   { key: "sniper", label: "Sniper", group: "firearms" },
@@ -92,10 +76,11 @@ function num(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
-/** Parse an "NdM" dice expression -> { count, faces } (or null). */
+/** Parse an "NdM" dice expression -> { count, faces }. A missing count means 1 (d8 = 1d8). */
 function parseDice(s) {
-  const m = String(s ?? "").match(/(\d+)\s*d\s*(\d+)/i);
-  return m ? { count: Number(m[1]), faces: Number(m[2]) } : null;
+  const m = String(s ?? "").match(/(\d*)\s*d\s*(\d+)/i);
+  if (!m) return null;
+  return { count: m[1] ? Number(m[1]) : 1, faces: Number(m[2]) };
 }
 
 /** Bump a die's faces up `steps` types (D6 -> D8 …), capped at D20. */
@@ -161,7 +146,6 @@ export async function addWeaponParam(actor, data, weaponIndex) {
     ui.notifications.info(game.i18n.localize("SCP2E.Param.AllAdded"));
     return;
   }
-
   const optGroup = (grp, lbl) => {
     const opts = available.filter((c) => c.group === grp).map((c) => `<option value="${c.key}">${esc(c.label)}</option>`).join("");
     return opts ? `<optgroup label="${lbl}">${opts}</optgroup>` : "";
@@ -188,7 +172,7 @@ export async function addWeaponParam(actor, data, weaponIndex) {
     ],
     rejectClose: false
   });
-  // DialogV2 coalesces a null callback result to the button's action name, so
+  // DialogV2 coalesces a null callback result to the button action name, so
   // Cancel yields "cancel". Only accept a real, known keyword key.
   if (!key || !PARAM_LABELS[key]) return;
 
@@ -208,12 +192,13 @@ export async function removeWeaponParam(actor, data, weaponIndex, key) {
 /*  Exertion                                                                  */
 /* -------------------------------------------------------------------------- */
 
-/** Spend one point of Exertion, if available. Returns true if spent. */
-async function spendExertion(actor, data) {
+/** Spend up to `n` points of Exertion. Returns the number actually spent. */
+async function spendExertion(actor, data, n = 1) {
   const cur = Number(data.tracks?.exertion ?? 0);
-  if (cur <= 0) return false;
-  await actor.setFlag(MODULE_ID, `${FLAG_KEY}.tracks.exertion`, cur - 1);
-  return true;
+  const spend = Math.min(Math.max(0, Math.floor(n)), cur);
+  if (spend <= 0) return 0;
+  await actor.setFlag(MODULE_ID, `${FLAG_KEY}.tracks.exertion`, cur - spend);
+  return spend;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -233,10 +218,6 @@ function field(dialog, name) {
 /*  Pre-roll options popup (used by every attribute / skill roll)             */
 /* -------------------------------------------------------------------------- */
 
-/**
- * Show the small "roll options" popup, then roll the given attribute pool
- * (optionally as a skill check). Handles roll visibility and exertion.
- */
 export async function promptRoll(actor, data, attrKey, opts = {}) {
   const exert = Number(data.tracks?.exertion ?? 0);
   const content = `
@@ -249,8 +230,8 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
         </select>
       </div>
       <div class="form-group">
-        <label>${game.i18n.format("SCP2E.Roll.UseExertion", { n: exert })}</label>
-        <input type="checkbox" name="useExertion" ${exert > 0 ? "" : "disabled"}/>
+        <label>${game.i18n.format("SCP2E.Roll.ExertionDice", { n: exert })}</label>
+        <input type="number" name="exertDice" value="0" min="0" max="${exert}" step="1" ${exert > 0 ? "" : "disabled"}/>
       </div>
     </form>`;
 
@@ -260,22 +241,14 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
     content,
     buttons: [
       { action: "roll", label: game.i18n.localize("SCP2E.Roll.Do"), default: true,
-        callback: (event, button, dialog) => ({ rollMode: field(dialog, "rollMode"), useExertion: field(dialog, "useExertion") }) },
+        callback: (event, button, dialog) => ({ rollMode: field(dialog, "rollMode"), exertDice: field(dialog, "exertDice") }) },
       { action: "cancel", label: game.i18n.localize("SCP2E.Cancel"), callback: () => null }
     ],
     rejectClose: false
   });
-  // Cancel/close resolves to a non-object (action name or undefined) — bail then.
   if (!result || typeof result !== "object") return null;
 
-  let bonusPool = null;
-  let bonusLabel = null;
-  const notes = [];
-  if (result.useExertion && (await spendExertion(actor, data))) {
-    bonusPool = { d12: 1 };
-    bonusLabel = game.i18n.localize("SCP2E.Roll.ExertionDie");
-    notes.push(game.i18n.localize("SCP2E.Roll.ExertionUsed"));
-  }
+  const { bonusPool, bonusLabel, notes } = await applyExertionDice(actor, data, num(result.exertDice));
 
   return rollPool(actor, data, attrKey, {
     skillKey: opts.skillKey ?? null,
@@ -289,11 +262,21 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
   });
 }
 
+/** Spend N exertion for +N d12 on a roll; returns bonus pool + card note bits. */
+async function applyExertionDice(actor, data, want) {
+  const spent = want > 0 ? await spendExertion(actor, data, want) : 0;
+  if (spent <= 0) return { bonusPool: null, bonusLabel: null, notes: [] };
+  return {
+    bonusPool: { d12: spent },
+    bonusLabel: `${spent}×${game.i18n.localize("SCP2E.Roll.ExertionDie")}`,
+    notes: [game.i18n.format("SCP2E.Roll.ExertionUsedN", { n: spent })]
+  };
+}
+
 /* -------------------------------------------------------------------------- */
 /*  Distance measurement                                                      */
 /* -------------------------------------------------------------------------- */
 
-/** Grid distance from the actor's token to a single targeted token, or null. */
 function measuredDistance(actor) {
   try {
     const src = actor.getActiveTokens?.()[0];
@@ -314,13 +297,9 @@ function measuredDistance(actor) {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Weapon attack                                                             */
+/*  Weapon attack (to-hit)                                                    */
 /* -------------------------------------------------------------------------- */
 
-/**
- * Open the attack dialog for a weapon and resolve it (to-hit + damage).
- * @param {boolean} [opts.isNpc]  NPC uses Perception/Dexterity pool + Physical skill.
- */
 export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}) {
   const weapon = (data.weapons ?? [])[weaponIndex];
   if (!weapon) {
@@ -336,14 +315,10 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
   const fx = aggregateParams(keys);
   const aimVal = num(weapon.aim);
 
-  // Skill is automatic (Firearms for ranged, Melee for melee), so no selector.
-  // NPCs get an explanatory note instead.
   const skillBlock = isNpc
     ? `<p class="scp2e-attack-note">${game.i18n.localize("SCP2E.Attack.NpcNote")}</p>`
     : "";
 
-  // Aim: a plain checkbox for normal weapons; a 0..N selector only when the
-  // weapon may Aim multiple times (Aim+ = 2, Sniper = 3).
   let aimBlock;
   if (fx.aimMax > 1) {
     const aimOpts = Array.from({ length: fx.aimMax + 1 }, (_, n) => `<option value="${n}">${n}×</option>`).join("");
@@ -389,8 +364,9 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
         <label class="scp2e-check"><input type="checkbox" name="applyRecoil"/> ${game.i18n.format("SCP2E.Attack.Recoil", { n: num(weapon.recoil) })}</label>
       </div>
       ${staggerBlock}
-      <div class="form-group scp2e-check-row">
-        <label class="scp2e-check"><input type="checkbox" name="useExertion" ${exert > 0 ? "" : "disabled"}/> ${game.i18n.format("SCP2E.Roll.UseExertion", { n: exert })}</label>
+      <div class="form-group">
+        <label>${game.i18n.format("SCP2E.Roll.ExertionDice", { n: exert })}</label>
+        <input type="number" name="exertDice" value="0" min="0" max="${exert}" step="1" ${exert > 0 ? "" : "disabled"}/>
       </div>
       <div class="form-group">
         <label>${game.i18n.localize("SCP2E.Roll.Visibility")}</label>
@@ -412,20 +388,18 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
       { action: "attack", label: game.i18n.localize("SCP2E.Attack.Do"), default: true,
         callback: (event, button, dialog) => ({
           attackType: field(dialog, "attackType"),
-          skillKey: field(dialog, "skillKey"),
           distance: field(dialog, "distance"),
           aimCount: field(dialog, "aimCount"),
           aimCheck: field(dialog, "aimCheck"),
           applyRecoil: field(dialog, "applyRecoil"),
           staggered: field(dialog, "staggered"),
-          useExertion: field(dialog, "useExertion"),
+          exertDice: field(dialog, "exertDice"),
           rollMode: field(dialog, "rollMode")
         }) },
       { action: "cancel", label: game.i18n.localize("SCP2E.Cancel"), callback: () => null }
     ],
     rejectClose: false
   });
-  // Cancel/close resolves to a non-object (action name or undefined) — bail then.
   if (!choice || typeof choice !== "object") return;
 
   const ranged = choice.attackType === "ranged";
@@ -433,7 +407,7 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
   /* ---- flat To-Hit modifiers ------------------------------------------ */
   const flatMods = [];
   let toHit = num(weapon.toHit);
-  if (fx.thrown && toHit < 0) toHit = 0;               // thrown ignores a negative To-Hit
+  if (fx.thrown && toHit < 0) toHit = 0;
   if (toHit) flatMods.push({ label: game.i18n.localize("SCP2E.Weapons.ToHit"), value: toHit });
 
   const aimCount = fx.aimMax > 1
@@ -449,36 +423,22 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     if (recoil) flatMods.push({ label: game.i18n.localize("SCP2E.Weapons.Recoil"), value: -Math.abs(recoil) });
   }
 
-  // Range increments (rulebook p151): the first band (distance ≤ range) is free,
-  // then one step per further band → ceil(distance / range) − 1.
-  // Normal → To-Hit penalty; Shotgun → To-Hit bonus (and −1 damage die each).
+  // Range increments (rulebook p151): first band free → ceil(distance / range) − 1.
   const distance = num(choice.distance);
   const hasAsterisk = /\*/.test(String(weapon.range ?? ""));
   let increments = 0;
   if (rangeNum > 0 && distance > 0) increments = Math.max(0, Math.ceil(distance / rangeNum) - 1);
   if (increments > 0) {
-    if (fx.rangeMode === "bonus") {
-      flatMods.push({ label: game.i18n.format("SCP2E.Attack.RangeBonus", { d: distance }), value: increments });
-    } else {
-      flatMods.push({ label: game.i18n.format("SCP2E.Attack.RangePenalty", { d: distance }), value: -increments });
-    }
+    if (fx.rangeMode === "bonus") flatMods.push({ label: game.i18n.format("SCP2E.Attack.RangeBonus", { d: distance }), value: increments });
+    else flatMods.push({ label: game.i18n.format("SCP2E.Attack.RangePenalty", { d: distance }), value: -increments });
   }
-  // Asterisked range is a hard cap (e.g. melee "1*"): note if the target is beyond it.
-  if (hasAsterisk && rangeNum > 0 && distance > rangeNum) {
-    fx.reminders.push(game.i18n.format("SCP2E.Attack.BeyondRange", { r: rangeNum }));
-  }
+  if (hasAsterisk && rangeNum > 0 && distance > rangeNum) fx.reminders.push(game.i18n.format("SCP2E.Attack.BeyondRange", { r: rangeNum }));
 
-  /* ---- exertion -------------------------------------------------------- */
-  let bonusPool = null;
-  let bonusLabel = null;
-  const toHitNotes = [...fx.reminders];
-  if (choice.useExertion && (await spendExertion(actor, data))) {
-    bonusPool = { d12: 1 };
-    bonusLabel = game.i18n.localize("SCP2E.Roll.ExertionDie");
-    toHitNotes.push(game.i18n.localize("SCP2E.Roll.ExertionUsed"));
-  }
+  /* ---- exertion dice on the to-hit ------------------------------------ */
+  const { bonusPool, bonusLabel, notes: exertNotes } = await applyExertionDice(actor, data, num(choice.exertDice));
+  const toHitNotes = [...fx.reminders, ...exertNotes];
 
-  /* ---- to-hit roll ----------------------------------------------------- */
+  /* ---- to-hit roll + damage button ------------------------------------ */
   const typeLabel = game.i18n.localize(ranged ? "SCP2E.Attack.Ranged" : "SCP2E.Attack.Melee");
   const title = `${weapon.name || game.i18n.localize("SCP2E.Attack.Weapon")} — ${typeLabel}`;
 
@@ -487,13 +447,24 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     const attrKey = ranged ? "perception" : "dexterity";
     const phys = data.npc?.skills?.physical ?? {};
     const mult = Math.max(1, Number(phys.mult) || 1);
-    const skillValue = (Number(phys.value) || 0) * mult;
-    rollArgs = { attrKey, skillValue, skillLabel: game.i18n.localize("SCP2E.Npc.Physical") };
+    rollArgs = { attrKey, skillValue: (Number(phys.value) || 0) * mult, skillLabel: game.i18n.localize("SCP2E.Npc.Physical") };
   } else {
-    const skillKey = choice.skillKey || (ranged ? "firearms" : "melee");
-    const attrKey = SKILLS[skillKey]?.gov ?? (ranged ? "perception" : "dexterity");
-    rollArgs = { attrKey, skillKey };
+    const skillKey = ranged ? "firearms" : "melee";
+    rollArgs = { attrKey: SKILLS[skillKey]?.gov ?? (ranged ? "perception" : "dexterity"), skillKey };
   }
+
+  const payload = {
+    actorUuid: actor.uuid,
+    weaponIndex,
+    ranged,
+    thrown: fx.thrown,
+    rollMode: choice.rollMode,
+    dieTypeBump: (fx.staggerToggle && choice.staggered) ? 1 : 0,
+    diceDelta: fx.damageDicePerIncrement * increments,
+    doubleMax: fx.damageDoubleMax,
+    reminders: fx.reminders
+  };
+  const cardButton = `<button type="button" class="scp2e-damage-btn" data-payload="${encodeURIComponent(JSON.stringify(payload))}"><i class="fa-solid fa-heart-crack"></i> ${game.i18n.localize("SCP2E.Attack.ConfirmDamage")}</button>`;
 
   await rollPool(actor, data, rollArgs.attrKey, {
     skillKey: rollArgs.skillKey ?? null,
@@ -504,52 +475,90 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     bonusLabel,
     rollMode: choice.rollMode,
     title,
-    notes: toHitNotes
+    notes: toHitNotes,
+    cardButton
   });
+}
 
-  /* ---- damage roll ----------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+/*  Damage (triggered from the hit card)                                      */
+/* -------------------------------------------------------------------------- */
+
+/** Prompt for an optional Exertion rating boost, then roll damage. */
+async function confirmDamage(actor, payload) {
+  const data = normalizeData(actor.getFlag(MODULE_ID, FLAG_KEY));
+  const weapon = (data.weapons ?? [])[payload.weaponIndex];
+  if (!weapon) { ui.notifications.warn(game.i18n.localize("SCP2E.Attack.NoWeapon")); return; }
+
+  const ranged = !!payload.ranged;
+  const thrown = !!payload.thrown;
+  const avail = Number(data.tracks?.exertion ?? 0);
+  const ratingLabel = thrown
+    ? game.i18n.localize("SCP2E.Attack.ThrownRating")
+    : game.i18n.localize(ranged ? "SCP2E.Field.Projectile" : "SCP2E.Field.Combat");
+
+  const content = `
+    <form class="scp2e-dmgdlg">
+      <div class="form-group">
+        <label>${game.i18n.format("SCP2E.Attack.RatingBoost", { r: ratingLabel })}</label>
+        <input type="number" name="ratingBoost" value="0" min="0" max="${avail}" step="1" ${avail > 0 ? "" : "disabled"}/>
+      </div>
+      <p class="scp2e-attack-note">${game.i18n.format("SCP2E.Attack.ExertLeft", { n: avail })}</p>
+    </form>`;
+
+  const D = DialogV2();
+  const res = await D.wait({
+    window: { title: game.i18n.localize("SCP2E.Attack.DamageTitle"), icon: "fa-solid fa-heart-crack" },
+    content,
+    buttons: [
+      { action: "roll", label: game.i18n.localize("SCP2E.Attack.RollDamage"), default: true,
+        callback: (event, button, dialog) => ({ ratingBoost: field(dialog, "ratingBoost") }) },
+      { action: "cancel", label: game.i18n.localize("SCP2E.Cancel"), callback: () => null }
+    ],
+    rejectClose: false
+  });
+  if (!res || typeof res !== "object") return;
+
+  const spent = await spendExertion(actor, data, num(res.ratingBoost));
   await rollDamage(actor, data, weapon, {
-    ranged,
-    thrown: fx.thrown,
-    rollMode: choice.rollMode,
-    dieTypeBump: (fx.staggerToggle && choice.staggered) ? 1 : 0,
-    diceDelta: fx.damageDicePerIncrement * increments,   // shotgun: negative
-    doubleMax: fx.damageDoubleMax,
-    reminders: fx.reminders
+    ranged, thrown,
+    rollMode: payload.rollMode,
+    dieTypeBump: payload.dieTypeBump || 0,
+    diceDelta: payload.diceDelta || 0,
+    doubleMax: !!payload.doubleMax,
+    reminders: payload.reminders || [],
+    extraRating: spent
   });
 }
 
 /**
- * Roll weapon damage: Base Damage + (X.Dam die-count × rating)d(faces), where
- * rating = Projectile (ranged) / Combat (melee) / higher of the two (thrown).
- * Applies keyword damage effects: die-type bump (Assassin), dice add/remove
- * (Shotgun range), and double-on-max (Lashing).
+ * Roll weapon damage: Base Damage + (X.Dam die-count × rating)d(faces).
+ * rating = Projectile (ranged) / Combat (melee) / higher of the two (thrown),
+ * plus any Exertion rating boost. Honours die-type bump (Assassin), dice
+ * add/remove (Shotgun range) and double-on-max (Lashing). Shows the dice.
  */
-async function rollDamage(actor, data, weapon, { ranged, thrown, rollMode, dieTypeBump = 0, diceDelta = 0, doubleMax = false, reminders = [] }) {
+async function rollDamage(actor, data, weapon, { ranged, thrown, rollMode, dieTypeBump = 0, diceDelta = 0, doubleMax = false, reminders = [], extraRating = 0 }) {
   const combat = num(data.combat?.combat);
   const projectile = num(data.combat?.projectile);
-  const rating = thrown ? Math.max(combat, projectile) : (ranged ? projectile : combat);
+  let rating = thrown ? Math.max(combat, projectile) : (ranged ? projectile : combat);
+  rating += Math.max(0, extraRating);
 
-  // Build a flat list of dice faces (base first, then X damage).
   let list = [];
   const base = parseDice(weapon.bDam);
   let baseFlat = 0;
   if (base) for (let k = 0; k < base.count; k++) list.push(base.faces);
-  else baseFlat = num(weapon.bDam);   // support a flat base value
+  else baseFlat = num(weapon.bDam);
 
   const x = parseDice(weapon.xDam);
   if (x && rating > 0) for (let k = 0; k < x.count * rating; k++) list.push(x.faces);
 
-  // Assassin: bump every damage die up one type.
   if (dieTypeBump > 0) list = list.map((f) => bumpFaces(f, dieTypeBump));
 
-  // Shotgun range: remove dice (from the X.Dam end first). diceDelta is negative.
   if (diceDelta < 0) { let r = -diceDelta; while (r > 0 && list.length > 0) { list.pop(); r--; } }
   else if (diceDelta > 0) { const f = list[list.length - 1] ?? (x?.faces ?? base?.faces ?? 6); for (let k = 0; k < diceDelta; k++) list.push(f); }
 
-  if (!list.length && !baseFlat) return;
+  if (!list.length && !baseFlat) { ui.notifications.info(game.i18n.localize("SCP2E.Attack.NoDamage")); return; }
 
-  // Group into an evaluable formula.
   const groups = {};
   for (const f of list) groups[f] = (groups[f] || 0) + 1;
   const terms = Object.entries(groups).map(([f, c]) => `${c}d${f}`);
@@ -564,29 +573,36 @@ async function rollDamage(actor, data, weapon, { ranged, thrown, rollMode, dieTy
     return;
   }
 
-  // Lashing: dice that rolled their max are doubled.
-  let total = roll.total;
-  if (doubleMax) {
-    total = baseFlat;
-    for (const term of roll.dice) {
-      for (const r of term.results) {
-        if (r.active === false) continue;
-        total += r.result + (r.result === term.faces ? r.result : 0);
-      }
+  // Render each die; Lashing doubles dice that rolled their max.
+  let total = baseFlat;
+  const dieSpans = [];
+  for (const term of roll.dice) {
+    for (const r of term.results) {
+      if (r.active === false) continue;
+      const isMax = r.result === term.faces;
+      const doubled = doubleMax && isMax;
+      total += r.result + (doubled ? r.result : 0);
+      dieSpans.push(`<span class="scp-die${doubled ? " boom" : ""}">d${term.faces}:${r.result}${doubled ? " ×2" : ""}</span>`);
     }
   }
+  if (!doubleMax) total = roll.total; // no Lashing → use the plain evaluated total
 
   const ratingLabel = thrown
     ? game.i18n.localize("SCP2E.Attack.ThrownRating")
     : game.i18n.localize(ranged ? "SCP2E.Field.Projectile" : "SCP2E.Field.Combat");
   const flavor = `${weapon.name || game.i18n.localize("SCP2E.Attack.Weapon")} — ${game.i18n.localize("SCP2E.Attack.Damage")}`;
-  const noteLine = reminders.length
-    ? `<div class="scp-roll-line scp-roll-notes">${reminders.map((n) => `• ${esc(n)}`).join("<br>")}</div>`
+  const noteList = [...reminders];
+  if (extraRating > 0) noteList.unshift(game.i18n.format("SCP2E.Attack.RatingBoostNote", { n: extraRating, r: ratingLabel }));
+  const noteLine = noteList.length
+    ? `<div class="scp-roll-line scp-roll-notes">${noteList.map((n) => `• ${esc(n)}`).join("<br>")}</div>`
     : "";
+  const baseFlatHtml = baseFlat ? ` <span class="scp-die">+${baseFlat}</span>` : "";
+
   const content = `
     <div class="scp2e-roll">
       <div class="scp-roll-head">${flavor}</div>
       <div class="scp-roll-pool">${esc(formula)} <span class="scp-roll-bonus">(${ratingLabel} ${rating})</span></div>
+      <div class="scp-roll-dice">${dieSpans.join(" ")}${baseFlatHtml}</div>
       <div class="scp-roll-total">${game.i18n.localize("SCP2E.Attack.Damage")}: <strong>${total}</strong></div>
       ${noteLine}
     </div>`;
@@ -601,3 +617,33 @@ async function rollDamage(actor, data, weapon, { ranged, thrown, rollMode, dieTy
   ChatMessage.applyRollMode(messageData, rollMode || game.settings.get("core", "rollMode"));
   await ChatMessage.create(messageData);
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Chat-card damage button wiring                                            */
+/* -------------------------------------------------------------------------- */
+
+async function onDamageClick(event) {
+  event.preventDefault();
+  const btn = event.currentTarget;
+  let payload;
+  try { payload = JSON.parse(decodeURIComponent(btn.dataset.payload)); } catch (e) { return; }
+  const resolved = await fromUuid(payload.actorUuid).catch(() => null);
+  const actor = resolved?.documentName === "Actor" ? resolved : resolved?.actor;
+  if (!actor) { ui.notifications.warn(game.i18n.localize("SCP2E.Attack.NoActor")); return; }
+  if (!actor.isOwner && !game.user.isGM) { ui.notifications.warn(game.i18n.localize("SCP2E.Attack.NoOwner")); return; }
+  try { await confirmDamage(actor, payload); }
+  catch (err) { console.error("SCP2e | damage failed:", err); ui.notifications.error("SCP2e: damage roll failed (see console)."); }
+}
+
+function bindDamageButtons(root) {
+  if (!root?.querySelectorAll) return;
+  for (const b of root.querySelectorAll(".scp2e-damage-btn")) {
+    if (b.dataset.bound) continue;
+    b.dataset.bound = "1";
+    b.addEventListener("click", onDamageClick);
+  }
+}
+
+// v13+ passes an HTMLElement; older cores pass jQuery. Handle both, once each.
+Hooks.on("renderChatMessageHTML", (message, html) => bindDamageButtons(html instanceof HTMLElement ? html : html?.[0]));
+Hooks.on("renderChatMessage", (message, html) => bindDamageButtons(html?.[0] ?? (html instanceof HTMLElement ? html : null)));
