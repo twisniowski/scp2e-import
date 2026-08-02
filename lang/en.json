@@ -145,6 +145,8 @@
   "SCP2E.Roll.ExertionUsed": "Exertion used — 1 point spent.",
   "SCP2E.Roll.ExertionDice": "Exertion dice — +1d12 each (max {n})",
   "SCP2E.Roll.ExertionUsedN": "Exertion used — {n} point(s) spent.",
+  "SCP2E.Roll.Punished": "Punished roll (no explosions, no exertion)",
+  "SCP2E.Roll.PunishedNote": "Punished roll — dice do not explode; no Exertion.",
   "SCP2E.Roll.OptionsTitle": "Roll options",
   "SCP2E.Roll.Do": "Roll",
   "SCP2E.Attack.Title": "Attack",

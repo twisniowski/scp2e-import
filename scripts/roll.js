@@ -46,8 +46,11 @@ export async function rollPool(actor, data, attrKey, {
   title = null,
   notes = [],
   cardButton = "",
-  messageFlags = null
+  messageFlags = null,
+  punished = false
 } = {}) {
+  // Punished rolls never explode and can't benefit from Exertion dice.
+  if (punished) bonusPool = null;
   const attr = data.attributes?.[attrKey] ?? {};
   const pool = attr.dice ?? {};
 
@@ -81,7 +84,7 @@ export async function rollPool(actor, data, attrKey, {
     for (const term of roll.dice) {
       for (const r of term.results) {
         if (r.active === false) continue;
-        const isMax = r.result === f && NEXT_FACE[f] !== null;
+        const isMax = !punished && r.result === f && NEXT_FACE[f] !== null;
         dice.push({ faces: f, value: r.result, exploded: isMax, bonus: idx >= base[f] });
         if (isMax) maxes++;
         idx++;
@@ -135,8 +138,10 @@ export async function rollPool(actor, data, attrKey, {
   }).join(" ");
 
   const flavor = title || (flavorSkill ? `${attrLabel} + ${flavorSkill}` : attrLabel);
-  const noteLine = (notes ?? []).length
-    ? `<div class="scp-roll-line scp-roll-notes">${notes.map((n) => `• ${n}`).join("<br>")}</div>`
+  const allNotes = [...(notes ?? [])];
+  if (punished) allNotes.unshift(game.i18n.localize("SCP2E.Roll.PunishedNote"));
+  const noteLine = allNotes.length
+    ? `<div class="scp-roll-line scp-roll-notes">${allNotes.map((n) => `• ${n}`).join("<br>")}</div>`
     : "";
 
   const content = `

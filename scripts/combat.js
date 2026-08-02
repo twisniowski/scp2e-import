@@ -214,6 +214,28 @@ function field(dialog, name) {
   return el.type === "checkbox" ? el.checked : el.value;
 }
 
+/**
+ * Best-effort: when the "punished" checkbox is ticked, disable the exertion
+ * input (punished rolls can't use Exertion). Correctness is also enforced at
+ * submit, so this is purely a UX nicety.
+ */
+function wirePunished(elOrDialog) {
+  try {
+    const root = elOrDialog?.element ?? (elOrDialog instanceof HTMLElement ? elOrDialog : null);
+    if (!root) return;
+    const pun = root.querySelector('[name="punished"]');
+    const ex = root.querySelector('[name="exertDice"]');
+    if (!pun || !ex) return;
+    const exAvailable = !ex.disabled;
+    const sync = () => {
+      if (pun.checked) { ex.value = "0"; ex.disabled = true; }
+      else ex.disabled = !exAvailable;
+    };
+    pun.addEventListener("change", sync);
+    sync();
+  } catch (e) { /* non-fatal */ }
+}
+
 /* -------------------------------------------------------------------------- */
 /*  Pre-roll options popup (used by every attribute / skill roll)             */
 /* -------------------------------------------------------------------------- */
@@ -229,6 +251,9 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
           <option value="gmroll">${game.i18n.localize("SCP2E.Roll.GMOnly")}</option>
         </select>
       </div>
+      <div class="form-group scp2e-check-row">
+        <label class="scp2e-check"><input type="checkbox" name="punished"/> ${game.i18n.localize("SCP2E.Roll.Punished")}</label>
+      </div>
       <div class="form-group">
         <label>${game.i18n.format("SCP2E.Roll.ExertionDice", { n: exert })}</label>
         <input type="number" name="exertDice" value="0" min="0" max="${exert}" step="1" ${exert > 0 ? "" : "disabled"}/>
@@ -239,16 +264,20 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
   const result = await D.wait({
     window: { title: game.i18n.localize("SCP2E.Roll.OptionsTitle") },
     content,
+    render: (event, dialog) => wirePunished(dialog ?? event),
     buttons: [
       { action: "roll", label: game.i18n.localize("SCP2E.Roll.Do"), default: true,
-        callback: (event, button, dialog) => ({ rollMode: field(dialog, "rollMode"), exertDice: field(dialog, "exertDice") }) },
+        callback: (event, button, dialog) => ({ rollMode: field(dialog, "rollMode"), exertDice: field(dialog, "exertDice"), punished: field(dialog, "punished") }) },
       { action: "cancel", label: game.i18n.localize("SCP2E.Cancel"), callback: () => null }
     ],
     rejectClose: false
   });
   if (!result || typeof result !== "object") return null;
 
-  const { bonusPool, bonusLabel, notes } = await applyExertionDice(actor, data, num(result.exertDice));
+  const punished = !!result.punished;
+  const { bonusPool, bonusLabel, notes } = punished
+    ? { bonusPool: null, bonusLabel: null, notes: [] }
+    : await applyExertionDice(actor, data, num(result.exertDice));
 
   return rollPool(actor, data, attrKey, {
     skillKey: opts.skillKey ?? null,
@@ -258,7 +287,8 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
     rollMode: result.rollMode,
     bonusPool,
     bonusLabel,
-    notes
+    notes,
+    punished
   });
 }
 
@@ -364,6 +394,9 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
         <label class="scp2e-check"><input type="checkbox" name="applyRecoil"/> ${game.i18n.format("SCP2E.Attack.Recoil", { n: num(weapon.recoil) })}</label>
       </div>
       ${staggerBlock}
+      <div class="form-group scp2e-check-row">
+        <label class="scp2e-check"><input type="checkbox" name="punished"/> ${game.i18n.localize("SCP2E.Roll.Punished")}</label>
+      </div>
       <div class="form-group">
         <label>${game.i18n.format("SCP2E.Roll.ExertionDice", { n: exert })}</label>
         <input type="number" name="exertDice" value="0" min="0" max="${exert}" step="1" ${exert > 0 ? "" : "disabled"}/>
@@ -384,6 +417,7 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
   const choice = await D.wait({
     window: { title: game.i18n.localize("SCP2E.Attack.Title"), icon: "fa-solid fa-crosshairs" },
     content,
+    render: (event, dialog) => wirePunished(dialog ?? event),
     buttons: [
       { action: "attack", label: game.i18n.localize("SCP2E.Attack.Do"), default: true,
         callback: (event, button, dialog) => ({
@@ -394,6 +428,7 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
           applyRecoil: field(dialog, "applyRecoil"),
           staggered: field(dialog, "staggered"),
           exertDice: field(dialog, "exertDice"),
+          punished: field(dialog, "punished"),
           rollMode: field(dialog, "rollMode")
         }) },
       { action: "cancel", label: game.i18n.localize("SCP2E.Cancel"), callback: () => null }
@@ -434,8 +469,11 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
   }
   if (hasAsterisk && rangeNum > 0 && distance > rangeNum) fx.reminders.push(game.i18n.format("SCP2E.Attack.BeyondRange", { r: rangeNum }));
 
-  /* ---- exertion dice on the to-hit ------------------------------------ */
-  const { bonusPool, bonusLabel, notes: exertNotes } = await applyExertionDice(actor, data, num(choice.exertDice));
+  /* ---- exertion dice on the to-hit (none if punished) ----------------- */
+  const punished = !!choice.punished;
+  const { bonusPool, bonusLabel, notes: exertNotes } = punished
+    ? { bonusPool: null, bonusLabel: null, notes: [] }
+    : await applyExertionDice(actor, data, num(choice.exertDice));
   const toHitNotes = [...fx.reminders, ...exertNotes];
 
   /* ---- to-hit roll + damage button ------------------------------------ */
@@ -462,7 +500,8 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     dieTypeBump: (fx.staggerToggle && choice.staggered) ? 1 : 0,
     diceDelta: fx.damageDicePerIncrement * increments,
     doubleMax: fx.damageDoubleMax,
-    reminders: fx.reminders
+    reminders: fx.reminders,
+    punished
   };
   // The attack context is stored as a flag on the chat message (robust against
   // chat-content sanitisation); the button only needs its class + message id.
@@ -479,7 +518,8 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     title,
     notes: toHitNotes,
     cardButton,
-    messageFlags: { [MODULE_ID]: { attack: payload } }
+    messageFlags: { [MODULE_ID]: { attack: payload } },
+    punished
   });
 }
 
@@ -495,18 +535,23 @@ async function confirmDamage(actor, payload) {
 
   const ranged = !!payload.ranged;
   const thrown = !!payload.thrown;
+  const punished = !!payload.punished;
   const avail = Number(data.tracks?.exertion ?? 0);
+  const canBoost = avail > 0 && !punished;   // punished rolls can't use Exertion
   const ratingLabel = thrown
     ? game.i18n.localize("SCP2E.Attack.ThrownRating")
     : game.i18n.localize(ranged ? "SCP2E.Field.Projectile" : "SCP2E.Field.Combat");
 
+  const boostNote = punished
+    ? `<p class="scp2e-attack-note">${game.i18n.localize("SCP2E.Roll.PunishedNote")}</p>`
+    : `<p class="scp2e-attack-note">${game.i18n.format("SCP2E.Attack.ExertLeft", { n: avail })}</p>`;
   const content = `
     <form class="scp2e-dmgdlg">
       <div class="form-group">
         <label>${game.i18n.format("SCP2E.Attack.RatingBoost", { r: ratingLabel })}</label>
-        <input type="number" name="ratingBoost" value="0" min="0" max="${avail}" step="1" ${avail > 0 ? "" : "disabled"}/>
+        <input type="number" name="ratingBoost" value="0" min="0" max="${canBoost ? avail : 0}" step="1" ${canBoost ? "" : "disabled"}/>
       </div>
-      <p class="scp2e-attack-note">${game.i18n.format("SCP2E.Attack.ExertLeft", { n: avail })}</p>
+      ${boostNote}
     </form>`;
 
   const D = DialogV2();
@@ -522,7 +567,7 @@ async function confirmDamage(actor, payload) {
   });
   if (!res || typeof res !== "object") return;
 
-  const spent = await spendExertion(actor, data, num(res.ratingBoost));
+  const spent = punished ? 0 : await spendExertion(actor, data, num(res.ratingBoost));
   await rollDamage(actor, data, weapon, {
     ranged, thrown,
     rollMode: payload.rollMode,
