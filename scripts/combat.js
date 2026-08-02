@@ -270,9 +270,11 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
 
   let bonusPool = null;
   let bonusLabel = null;
+  const notes = [];
   if (result.useExertion && (await spendExertion(actor, data))) {
     bonusPool = { d12: 1 };
     bonusLabel = game.i18n.localize("SCP2E.Roll.ExertionDie");
+    notes.push(game.i18n.localize("SCP2E.Roll.ExertionUsed"));
   }
 
   return rollPool(actor, data, attrKey, {
@@ -282,7 +284,8 @@ export async function promptRoll(actor, data, attrKey, opts = {}) {
     title: opts.title ?? null,
     rollMode: result.rollMode,
     bonusPool,
-    bonusLabel
+    bonusLabel,
+    notes
   });
 }
 
@@ -457,9 +460,11 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
   /* ---- exertion -------------------------------------------------------- */
   let bonusPool = null;
   let bonusLabel = null;
+  const toHitNotes = [...fx.reminders];
   if (choice.useExertion && (await spendExertion(actor, data))) {
     bonusPool = { d12: 1 };
     bonusLabel = game.i18n.localize("SCP2E.Roll.ExertionDie");
+    toHitNotes.push(game.i18n.localize("SCP2E.Roll.ExertionUsed"));
   }
 
   /* ---- to-hit roll ----------------------------------------------------- */
@@ -488,7 +493,7 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
     bonusLabel,
     rollMode: choice.rollMode,
     title,
-    notes: fx.reminders
+    notes: toHitNotes
   });
 
   /* ---- damage roll ----------------------------------------------------- */

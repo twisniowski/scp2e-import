@@ -142,6 +142,7 @@
   "SCP2E.Roll.GMOnly": "GM only",
   "SCP2E.Roll.UseExertion": "Use exertion (+1d12, spend 1) — {n} left",
   "SCP2E.Roll.ExertionDie": "Exertion d12",
+  "SCP2E.Roll.ExertionUsed": "Exertion used — 1 point spent.",
   "SCP2E.Roll.OptionsTitle": "Roll options",
   "SCP2E.Roll.Do": "Roll",
   "SCP2E.Attack.Title": "Attack",
