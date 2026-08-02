@@ -277,3 +277,7 @@ table.wslots input { width: 100%; border: none; background: transparent; }
   cursor: pointer; padding: 1px 6px; margin: 1px; font-size: 0.8em; line-height: 1.4;
 }
 .param-add:hover { background: #444; }
+
+/* Attack dialog: one checkbox per line, left-aligned full width */
+.scp2e-attackdlg .scp2e-check-row { justify-content: flex-start; }
+.scp2e-attackdlg .scp2e-check-row > label { flex: 1 1 auto; }

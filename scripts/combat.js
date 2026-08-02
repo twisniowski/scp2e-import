@@ -336,26 +336,29 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
   const fx = aggregateParams(keys);
   const aimVal = num(weapon.aim);
 
-  // PC skill selector (defaults: Firearms for ranged, Melee for melee).
-  const skillOptions = Object.entries(SKILLS)
-    .map(([k, def]) => `<option value="${k}">${game.i18n.localize(def.label)}</option>`)
-    .join("");
+  // Skill is automatic (Firearms for ranged, Melee for melee), so no selector.
+  // NPCs get an explanatory note instead.
   const skillBlock = isNpc
     ? `<p class="scp2e-attack-note">${game.i18n.localize("SCP2E.Attack.NpcNote")}</p>`
-    : `<div class="form-group">
-         <label>${game.i18n.localize("SCP2E.Attack.Skill")}</label>
-         <select name="skillKey">${skillOptions}</select>
-       </div>`;
+    : "";
 
-  // Aim selector 0..aimMax.
-  const aimOpts = Array.from({ length: fx.aimMax + 1 }, (_, n) => `<option value="${n}">${n}×</option>`).join("");
-  const aimBlock = `<div class="form-group">
-      <label>${game.i18n.format("SCP2E.Attack.AimTimes", { n: aimVal })}</label>
-      <select name="aimCount">${aimOpts}</select>
-    </div>`;
+  // Aim: a plain checkbox for normal weapons; a 0..N selector only when the
+  // weapon may Aim multiple times (Aim+ = 2, Sniper = 3).
+  let aimBlock;
+  if (fx.aimMax > 1) {
+    const aimOpts = Array.from({ length: fx.aimMax + 1 }, (_, n) => `<option value="${n}">${n}×</option>`).join("");
+    aimBlock = `<div class="form-group">
+        <label>${game.i18n.format("SCP2E.Attack.AimTimes", { n: aimVal })}</label>
+        <select name="aimCount">${aimOpts}</select>
+      </div>`;
+  } else {
+    aimBlock = `<div class="form-group scp2e-check-row">
+        <label class="scp2e-check"><input type="checkbox" name="aimCheck"/> ${game.i18n.format("SCP2E.Attack.Aim", { n: aimVal })}</label>
+      </div>`;
+  }
 
   const staggerBlock = fx.staggerToggle
-    ? `<label class="scp2e-check"><input type="checkbox" name="staggered"/> ${game.i18n.localize("SCP2E.Attack.Staggered")}</label>`
+    ? `<div class="form-group scp2e-check-row"><label class="scp2e-check"><input type="checkbox" name="staggered"/> ${game.i18n.localize("SCP2E.Attack.Staggered")}</label></div>`
     : "";
 
   const noteBits = [...fx.notes, ...fx.reminders];
@@ -382,9 +385,11 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
         <input type="number" name="distance" value="${measured ?? ""}" min="0" step="1" placeholder="—"/>
       </div>
       ${aimBlock}
-      <div class="form-group scp2e-attack-checks">
+      <div class="form-group scp2e-check-row">
         <label class="scp2e-check"><input type="checkbox" name="applyRecoil"/> ${game.i18n.format("SCP2E.Attack.Recoil", { n: num(weapon.recoil) })}</label>
-        ${staggerBlock}
+      </div>
+      ${staggerBlock}
+      <div class="form-group scp2e-check-row">
         <label class="scp2e-check"><input type="checkbox" name="useExertion" ${exert > 0 ? "" : "disabled"}/> ${game.i18n.format("SCP2E.Roll.UseExertion", { n: exert })}</label>
       </div>
       <div class="form-group">
@@ -410,6 +415,7 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
           skillKey: field(dialog, "skillKey"),
           distance: field(dialog, "distance"),
           aimCount: field(dialog, "aimCount"),
+          aimCheck: field(dialog, "aimCheck"),
           applyRecoil: field(dialog, "applyRecoil"),
           staggered: field(dialog, "staggered"),
           useExertion: field(dialog, "useExertion"),
@@ -430,8 +436,13 @@ export async function useWeapon(actor, data, weaponIndex, { isNpc = false } = {}
   if (fx.thrown && toHit < 0) toHit = 0;               // thrown ignores a negative To-Hit
   if (toHit) flatMods.push({ label: game.i18n.localize("SCP2E.Weapons.ToHit"), value: toHit });
 
-  const aimCount = Math.max(0, Math.min(fx.aimMax, num(choice.aimCount)));
-  if (aimCount > 0 && aimVal) flatMods.push({ label: `${game.i18n.localize("SCP2E.Weapons.Aim")} ×${aimCount}`, value: aimVal * aimCount });
+  const aimCount = fx.aimMax > 1
+    ? Math.max(0, Math.min(fx.aimMax, num(choice.aimCount)))
+    : (choice.aimCheck ? 1 : 0);
+  if (aimCount > 0 && aimVal) {
+    const aimLabel = fx.aimMax > 1 ? `${game.i18n.localize("SCP2E.Weapons.Aim")} ×${aimCount}` : game.i18n.localize("SCP2E.Weapons.Aim");
+    flatMods.push({ label: aimLabel, value: aimVal * aimCount });
+  }
 
   if (choice.applyRecoil) {
     const recoil = num(weapon.recoil);
